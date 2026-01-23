@@ -191,6 +191,13 @@ select:focus{
 
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
       <div>
+        <div style="margin-top:14px;">
+  <label>Admin PIN (Search के लिए)</label>
+  <input type="password" id="adminPin" placeholder="Enter PIN">
+  <button class="smallBtn" onclick="unlockSearch()">Unlock Search</button>
+</div>
+
+<div id="searchBox" style="display:none;">
         <p class="searchTitle">🔍 Search (Name & Mobile)</p>
         <div class="muted"></div>
       </div>
