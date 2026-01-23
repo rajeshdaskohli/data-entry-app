@@ -220,36 +220,35 @@
     }
   }
 
-  // Search (Frontend में अभी demo)
-  async function searchNow() {
+async function searchNow() {
   const q = document.getElementById("search").value.trim().toLowerCase();
   const results = document.getElementById("results");
   
-  if (q.length < 1) { // कम से कम 1 अक्षर होने पर सर्च शुरू होगा
+  if (q.length < 1) {
     results.innerHTML = "";
     return;
   }
 
-  results.innerHTML = "⏳ Searching...";
+  results.innerHTML = "⏳ खोज रहे हैं...";
 
   try {
-    // हम GET रिक्वेस्ट भेजेंगे जिसमें action=search और query होगी
+    // API को रिक्वेस्ट भेजना
     const res = await fetch(`${API_URL}?action=search&q=${q}`);
     const data = await res.json();
 
     if (data.status === "success" && data.results.length > 0) {
+      // केवल नाम और मोबाइल नंबर दिखाने के लिए मैप करना
       results.innerHTML = data.results.map(item => `
-        <div class="resultItem">
+        <div class="resultItem" style="border-left: 4px solid #16a34a;">
           <strong>👤 ${item.name}</strong><br>
-          📱 ${item.mobile} | 🏛️ ${item.vidhansabha}<br>
-          📍 ${item.area}
+          📞 ${item.mobile}
         </div>
       `).join('');
     } else {
       results.innerHTML = '<div class="resultItem">❌ कोई रिकॉर्ड नहीं मिला</div>';
     }
   } catch (e) {
-    results.innerHTML = '<div class="resultItem">❌ सर्च करने में समस्या आई</div>';
+    results.innerHTML = '<div class="resultItem">❌ नेटवर्क एरर</div>';
   }
 }
 </script>
