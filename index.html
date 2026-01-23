@@ -328,19 +328,17 @@ select:focus{
     document.getElementById("search").value = "";
     document.getElementById("results").innerHTML = "";
   }
-</script>
-    function setMsg(text, color){
+<script>
+function setMsg(text, color){
   const msg = document.getElementById("msg");
   msg.innerHTML = text;
   msg.style.color = color || "black";
 }
 
 function unlockSearch(){
-  alert("Unlock button clicked"); // ✅ टेस्ट के लिए
-
   const pin = document.getElementById("adminPin").value.trim();
 
-  if(pin === "7860"){  // 🔥 अपना PIN यहाँ
+  if(pin === "7860"){   // अपना PIN यहाँ
     document.getElementById("searchBox").style.display = "block";
     setMsg("✅ Search unlocked", "green");
   } else {
@@ -348,6 +346,7 @@ function unlockSearch(){
     setMsg("❌ Wrong PIN", "red");
   }
 }
+</script>
 
 </body>
 </html>
