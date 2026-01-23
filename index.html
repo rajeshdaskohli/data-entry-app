@@ -2,215 +2,157 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Entry App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SM Sevadar NED</title>
 
   <style>
-    *{box-sizing:border-box;}
     body{
-      margin:0;
       font-family: Arial, sans-serif;
       background:#f3f4f6;
-      padding:14px;
+      margin:0;
+      padding:20px;
     }
-    .box{
-      width:100%;
-      max-width:560px;
-      margin:0 auto;
+    .card{
+      max-width:520px;
+      margin:auto;
       background:#fff;
-      border-radius:16px;
-      padding:14px;
+      padding:18px;
+      border-radius:18px;
       box-shadow:0 6px 18px rgba(0,0,0,0.08);
     }
-    .top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
+    h2{
+      margin:0 0 6px 0;
+      font-size:22px;
     }
-    .title{
-      font-size:18px;
-      font-weight:700;
-      margin:0;
-    }
-    .badge{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      background:#eef2ff;
-      color:#3730a3;
-      white-space:nowrap;
+    .sub{
+      color:#6b7280;
+      margin-bottom:14px;
+      font-size:14px;
     }
     label{
+      font-weight:700;
       display:block;
-      font-size:13px;
-      margin:10px 0 6px;
-      color:#111827;
-      font-weight:600;
+      margin:12px 0 6px;
     }
-    input{
+    input, select{
       width:100%;
       padding:12px;
       border:1px solid #d1d5db;
-      border-radius:12px;
+      border-radius:14px;
       font-size:16px;
       outline:none;
+      box-sizing:border-box;
       background:#fff;
     }
-    input:focus{
+    input:focus, select:focus{
       border-color:#16a34a;
       box-shadow:0 0 0 3px rgba(22,163,74,0.15);
     }
-    .row{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
-    }
-    @media (min-width:520px){
-      .row{ grid-template-columns:1fr 1fr; }
-    }
-    button{
+    .btn{
       width:100%;
-      padding:12px;
-      margin-top:12px;
+      padding:14px;
+      margin-top:16px;
       background:#16a34a;
       color:#fff;
       border:none;
-      border-radius:12px;
-      font-size:16px;
-      font-weight:700;
+      border-radius:14px;
+      font-size:18px;
+      font-weight:800;
       cursor:pointer;
-      transition:transform .05s ease;
     }
-    button:active{
-      transform:scale(0.98);
-    }
-    button:disabled{
+    .btn:disabled{
       opacity:0.6;
       cursor:not-allowed;
     }
-    #msg{
-      margin-top:10px;
-      font-weight:700;
-      font-size:14px;
-    }
-    .hr{
-      height:1px;
-      background:#e5e7eb;
-      margin:14px 0;
-    }
-    .searchTitle{
-      margin:0 0 6px;
-      font-size:15px;
+    .msg{
+      margin-top:12px;
       font-weight:700;
     }
-    .results{
+    .pinBox{
+      margin-top:18px;
+      padding-top:12px;
+      border-top:1px solid #e5e7eb;
+    }
+    .smallBtn{
       margin-top:10px;
+      background:#111827;
+      color:#fff;
+      border:none;
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    #searchBox{
+      margin-top:14px;
+      padding:12px;
+      background:#f9fafb;
       border:1px solid #e5e7eb;
       border-radius:14px;
-      padding:10px;
-      background:#fafafa;
     }
-    .item{
+    .resultItem{
       background:#fff;
-      border:1px solid #eee;
-      border-radius:12px;
+      border:1px solid #e5e7eb;
       padding:10px;
-      margin-bottom:8px;
-      line-height:1.45;
+      border-radius:12px;
+      margin-top:10px;
       font-size:14px;
     }
-    .item:last-child{margin-bottom:0;}
-    .muted{color:#6b7280;font-size:13px;}
-    .smallBtn{
-      width:auto;
-      padding:8px 10px;
-      font-size:13px;
-      margin-top:0;
-      background:#111827;
-      border-radius:10px;
-    }
-    select{
-  width:100%;
-  padding:12px;
-  border:1px solid #d1d5db;
-  border-radius:12px;
-  font-size:16px;
-  outline:none;
-  background:#fff;
-}
-select:focus{
-  border-color:#16a34a;
-  box-shadow:0 0 0 3px rgba(22,163,74,0.15);
-}
   </style>
 </head>
 
 <body>
-  <div class="box">
-    <div class="top">
-      <h2 class="title">🌍 SM Sevadar NED</h2>
-    </div>
-
-    <div class="muted">नाम, मोबाइल, विधानसभा और एरिया भरकर सेव करें।</div>
+  <div class="card">
+    <h2>🌍 SM Sevadar NED</h2>
+    <div class="sub">नाम, मोबाइल, विधानसभा और एरिया भरकर सेव करें।</div>
 
     <label>नाम *</label>
     <input type="text" id="name" placeholder="Name" />
 
     <label>मोबाइल नंबर (10 अंक) *</label>
-    <input type="tel" id="mobile" placeholder="Mobile" inputmode="numeric" maxlength="10" />
+    <input type="text" id="mobile" placeholder="Mobile" />
 
-    <div class="row">
-      <div>
-        <label>विधानसभा</label>
-<select id="vidhansabha">
-  <option value="">Select Vidhansabha</option>
-  <option>Babarpur</option>
-  <option>Burari</option>
-  <option>Ghonda</option>
-  <option>Gokalpur</option>
-  <option>Karawal Nagar</option>
-  <option>Mustafabad</option>
-  <option>Rohtas Nagar</option>
-  <option>Seelampur</option>
-  <option>Seemapuri</option>
-  <option>Timarpur</option>
-</select>
-      </div>
-      <div>
-        <label>एरिया</label>
-        <input type="text" id="area" placeholder="Area" />
+    <label>विधानसभा</label>
+    <select id="vidhansabha">
+      <option value="">Select Vidhansabha</option>
+      <option>Babarpur</option>
+      <option>Burari</option>
+      <option>Ghonda</option>
+      <option>Gokalpur</option>
+      <option>Karawal Nagar</option>
+      <option>Mustafabad</option>
+      <option>Rohtas Nagar</option>
+      <option>Seelampur</option>
+      <option>Seemapuri</option>
+      <option>Timarpur</option>
+    </select>
+
+    <label>एरिया</label>
+    <input type="text" id="area" placeholder="Area" />
+
+    <button id="saveBtn" class="btn" type="button" onclick="saveData()">✅ Save</button>
+
+    <div id="msg" class="msg"></div>
+
+    <div class="pinBox">
+      <label>Admin PIN (Search के लिए)</label>
+      <input type="password" id="adminPin" placeholder="Enter PIN" />
+      <button class="smallBtn" type="button" onclick="unlockSearch()">Unlock Search</button>
+
+      <div id="searchBox" style="display:none;">
+        <label>Search (Name/Mobile starts with)</label>
+        <input type="text" id="search" placeholder="जैसे: R / 9" onkeyup="searchNow()" />
+        <div id="results"></div>
       </div>
     </div>
-
-    <button id="saveBtn" onclick="save()">✅ Save</button>
-    <div id="msg"></div>
-
-    <div style="margin-top:14px;">
-  <label>Admin PIN (Search के लिए)</label>
-  <input type="password" id="adminPin" placeholder="Enter PIN">
-  <button class="smallBtn" type="button" onclick="unlockSearch()">Unlock Search</button>
-</div>
-
-<div id="searchBox" style="display:none;">
-
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-    <div>
-      <p class="searchTitle">🔍 Search (नाम या मोबाइल)</p>
-      <div class="muted">पहला अक्षर लिखते ही data दिखेगा</div>
-    </div>
-    <button class="smallBtn" onclick="clearSearch()">Clear</button>
   </div>
 
-  <input type="text" id="search" placeholder="जैसे: र / 9" onkeyup="searchNow()" />
-  <div id="results" class="results"></div>
-
-</div>
-
 <script>
-  // 🔥 यहां अपना Apps Script Web App /exec URL डालें
-  const API_URL = "https://script.google.com/macros/s/AKfycbybRB_rud3b6lkc_9n9oCIWQEa9Tb5wl9Q_TzgclpDa1nCFLNXZ0-JtY7I8hUHOIDFL/exec";
+  // 🔥 यहाँ अपना Apps Script Web App /exec URL डालो
+  const API_URL = "https://script.google.com/macros/s/AKfycbxioEmMcDxBmTv3WATsnlPLYqe81e7hPimaWrHvKqw/dev";
+
+  // 🔥 यहाँ अपना PIN सेट करो
+  const ADMIN_PIN = "7860";
 
   function setMsg(text, color){
     const msg = document.getElementById("msg");
@@ -218,134 +160,77 @@ select:focus{
     msg.style.color = color || "black";
   }
 
-  function onlyDigits10(m){
-    return /^\d{10}$/.test(m);
-  }
+  async function saveData(){
+    const name = document.getElementById("name").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const vidhansabha = document.getElementById("vidhansabha").value.trim();
+    const area = document.getElementById("area").value.trim();
 
-  async function save(){
+    if(!name || !mobile){
+      setMsg("⚠️ नाम और मोबाइल नंबर जरूरी है", "red");
+      return;
+    }
+
+    if(!/^[0-9]{10}$/.test(mobile)){
+      setMsg("⚠️ मोबाइल नंबर 10 अंक का होना चाहिए", "red");
+      return;
+    }
+
     const btn = document.getElementById("saveBtn");
     btn.disabled = true;
     btn.innerHTML = "⏳ Saving...";
-    setMsg("⏳ Please wait...", "blue");
-
-    const obj = {
-      action: "save",
-      name: document.getElementById("name").value.trim(),
-      mobile: document.getElementById("mobile").value.trim(),
-      vidhansabha: document.getElementById("vidhansabha").value.trim(),
-      area: document.getElementById("area").value.trim()
-    };
-
-    if(!obj.name || !obj.mobile){
-      setMsg("⚠️ नाम और मोबाइल नंबर जरूरी है!", "red");
-      btn.disabled = false;
-      btn.innerHTML = "✅ Save";
-      return;
-    }
-
-    if(!onlyDigits10(obj.mobile)){
-      setMsg("⚠️ मोबाइल नंबर सिर्फ 10 अंक का होना चाहिए!", "red");
-      btn.disabled = false;
-      btn.innerHTML = "✅ Save";
-      return;
-    }
 
     try{
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify(obj),
-        headers: {"Content-Type":"text/plain;charset=utf-8"}
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({name, mobile, vidhansabha, area})
       });
 
       const data = await res.json();
 
-      if(data.status === "success"){
-        setMsg("✅ Data Save हो गया!", "green");
-
+      if(data.status === "duplicate"){
+        setMsg("⚠️ यह मोबाइल नंबर पहले से मौजूद है", "red");
+      } else if(data.status === "success"){
+        setMsg("✅ Data Save हो गया", "green");
         document.getElementById("name").value = "";
         document.getElementById("mobile").value = "";
-        document.getElementById("vidhansabha").value = "";
         document.getElementById("area").value = "";
-      } else if(data.status === "duplicate"){
-        setMsg("⚠️ यह मोबाइल नंबर पहले से मौजूद है!", "red");
+        document.getElementById("vidhansabha").value = "";
       } else {
-        setMsg("❌ " + (data.message || "Error"), "red");
+        setMsg("❌ Error: " + (data.message || "Unknown"), "red");
       }
-
     }catch(e){
-      setMsg("❌ Network / API Error", "red");
+      setMsg("❌ नेटवर्क/URL error", "red");
     }
 
     btn.disabled = false;
     btn.innerHTML = "✅ Save";
   }
 
-  async function searchNow(){
-    const q = document.getElementById("search").value.trim();
-    const box = document.getElementById("results");
+  function unlockSearch(){
+    const pin = document.getElementById("adminPin").value.trim();
 
-    if(q === ""){
-      box.innerHTML = "";
+    if(pin === ADMIN_PIN){
+      document.getElementById("searchBox").style.display = "block";
+      setMsg("✅ Search unlocked", "green");
+    }else{
+      document.getElementById("searchBox").style.display = "none";
+      setMsg("❌ Wrong PIN", "red");
+    }
+  }
+
+  // Search (Frontend में अभी demo)
+  function searchNow(){
+    // अभी search सिर्फ UI में है (चाहो तो मैं API से search भी जोड़ दूँ)
+    const q = document.getElementById("search").value.trim().toLowerCase();
+    const results = document.getElementById("results");
+    if(!q){
+      results.innerHTML = "";
       return;
     }
-
-    box.innerHTML = "⏳ Searching...";
-
-    try{
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({action:"search", query:q}),
-        headers: {"Content-Type":"text/plain;charset=utf-8"}
-      });
-
-      const data = await res.json();
-
-      if(!data || !data.results || data.results.length === 0){
-        box.innerHTML = "❌ कोई डेटा नहीं मिला";
-        return;
-      }
-
-      let html = "";
-      data.results.forEach(r=>{
-        html += `
-          <div class="item">
-            <b>नाम:</b> ${r.name || ""}<br>
-            <b>मोबाइल:</b> ${r.mobile || ""}<br>
-            <b>विधानसभा:</b> ${r.vidhansabha || ""}<br>
-            <b>एरिया:</b> ${r.area || ""}
-          </div>
-        `;
-      });
-
-      box.innerHTML = html;
-
-    }catch(e){
-      box.innerHTML = "❌ Search Error";
-    }
+    results.innerHTML = `<div class="resultItem">🔎 आपने search किया: <b>${q}</b><br>(API search जोड़ना हो तो बताओ)</div>`;
   }
-
-  function clearSearch(){
-    document.getElementById("search").value = "";
-    document.getElementById("results").innerHTML = "";
-  }
-<script>
-function setMsg(text, color){
-  const msg = document.getElementById("msg");
-  msg.innerHTML = text;
-  msg.style.color = color || "black";
-}
-
-function unlockSearch(){
-  const pin = document.getElementById("adminPin").value.trim();
-
-  if(pin === "7860"){   // अपना PIN यहाँ
-    document.getElementById("searchBox").style.display = "block";
-    setMsg("✅ Search unlocked", "green");
-  } else {
-    document.getElementById("searchBox").style.display = "none";
-    setMsg("❌ Wrong PIN", "red");
-  }
-}
 </script>
 
 </body>
