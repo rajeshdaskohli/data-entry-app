@@ -182,10 +182,10 @@
 
     try{
       const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type":"text/plain;charset=utf-8"},
-        body: JSON.stringify({name, mobile, vidhansabha, area})
-      });
+  method: "POST",
+  headers: {"Content-Type":"text/plain;charset=utf-8"},
+  body: JSON.stringify({name, mobile, vidhansabha, area})
+});
 
       const data = await res.json();
 
