@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Entry App</title>
+
+  <style>
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:#f3f4f6;
+      padding:14px;
+    }
+    .box{
+      width:100%;
+      max-width:560px;
+      margin:0 auto;
+      background:#fff;
+      border-radius:16px;
+      padding:14px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    }
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .title{
+      font-size:18px;
+      font-weight:700;
+      margin:0;
+    }
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#eef2ff;
+      color:#3730a3;
+      white-space:nowrap;
+    }
+    label{
+      display:block;
+      font-size:13px;
+      margin:10px 0 6px;
+      color:#111827;
+      font-weight:600;
+    }
+    input{
+      width:100%;
+      padding:12px;
+      border:1px solid #d1d5db;
+      border-radius:12px;
+      font-size:16px;
+      outline:none;
+      background:#fff;
+    }
+    input:focus{
+      border-color:#16a34a;
+      box-shadow:0 0 0 3px rgba(22,163,74,0.15);
+    }
+    .row{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    @media (min-width:520px){
+      .row{ grid-template-columns:1fr 1fr; }
+    }
+    button{
+      width:100%;
+      padding:12px;
+      margin-top:12px;
+      background:#16a34a;
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .05s ease;
+    }
+    button:active{
+      transform:scale(0.98);
+    }
+    button:disabled{
+      opacity:0.6;
+      cursor:not-allowed;
+    }
+    #msg{
+      margin-top:10px;
+      font-weight:700;
+      font-size:14px;
+    }
+    .hr{
+      height:1px;
+      background:#e5e7eb;
+      margin:14px 0;
+    }
+    .searchTitle{
+      margin:0 0 6px;
+      font-size:15px;
+      font-weight:700;
+    }
+    .results{
+      margin-top:10px;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:10px;
+      background:#fafafa;
+    }
+    .item{
+      background:#fff;
+      border:1px solid #eee;
+      border-radius:12px;
+      padding:10px;
+      margin-bottom:8px;
+      line-height:1.45;
+      font-size:14px;
+    }
+    .item:last-child{margin-bottom:0;}
+    .muted{color:#6b7280;font-size:13px;}
+    .smallBtn{
+      width:auto;
+      padding:8px 10px;
+      font-size:13px;
+      margin-top:0;
+      background:#111827;
+      border-radius:10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <div class="top">
+      <h2 class="title">📌 Data Entry App</h2>
+      <div class="badge">Cloud Ready</div>
+    </div>
+
+    <div class="muted">नाम, मोबाइल, विधानसभा और एरिया भरकर सेव करें।</div>
+
+    <label>नाम *</label>
+    <input type="text" id="name" placeholder="जैसे: राज कुमार" />
+
+    <label>मोबाइल नंबर (10 अंक) *</label>
+    <input type="tel" id="mobile" placeholder="जैसे: 9999988888" inputmode="numeric" maxlength="10" />
+
+    <div class="row">
+      <div>
+        <label>विधानसभा</label>
+        <input type="text" id="vidhansabha" placeholder="जैसे: मुस्तफाबाद" />
+      </div>
+      <div>
+        <label>एरिया</label>
+        <input type="text" id="area" placeholder="जैसे: गली नंबर 5" />
+      </div>
+    </div>
+
+    <button id="saveBtn" onclick="save()">✅ Save</button>
+    <div id="msg"></div>
+
+    <div class="hr"></div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div>
+        <p class="searchTitle">🔍 Search (नाम या मोबाइल)</p>
+        <div class="muted">पहला अक्षर लिखते ही data दिखेगा</div>
+      </div>
+      <button class="smallBtn" onclick="clearSearch()">Clear</button>
+    </div>
+
+    <input type="text" id="search" placeholder="जैसे: र / 9" onkeyup="searchNow()" />
+    <div id="results" class="results"></div>
+  </div>
+
+<script>
+  // 🔥 यहां अपना Apps Script Web App /exec URL डालें
+  const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+  function setMsg(text, color){
+    const msg = document.getElementById("msg");
+    msg.innerHTML = text;
+    msg.style.color = color || "black";
+  }
+
+  function onlyDigits10(m){
+    return /^\d{10}$/.test(m);
+  }
+
+  async function save(){
+    const btn = document.getElementById("saveBtn");
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Saving...";
+    setMsg("⏳ कृपया इंतजार करें...", "blue");
+
+    const obj = {
+      action: "save",
+      name: document.getElementById("name").value.trim(),
+      mobile: document.getElementById("mobile").value.trim(),
+      vidhansabha: document.getElementById("vidhansabha").value.trim(),
+      area: document.getElementById("area").value.trim()
+    };
+
+    if(!obj.name || !obj.mobile){
+      setMsg("⚠️ नाम और मोबाइल नंबर जरूरी है!", "red");
+      btn.disabled = false;
+      btn.innerHTML = "✅ Save";
+      return;
+    }
+
+    if(!onlyDigits10(obj.mobile)){
+      setMsg("⚠️ मोबाइल नंबर सिर्फ 10 अंक का होना चाहिए!", "red");
+      btn.disabled = false;
+      btn.innerHTML = "✅ Save";
+      return;
+    }
+
+    try{
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(obj),
+        headers: {"Content-Type":"text/plain;charset=utf-8"}
+      });
+
+      const data = await res.json();
+
+      if(data.status === "success"){
+        setMsg("✅ Data Save हो गया!", "green");
+
+        document.getElementById("name").value = "";
+        document.getElementById("mobile").value = "";
+        document.getElementById("vidhansabha").value = "";
+        document.getElementById("area").value = "";
+      } else if(data.status === "duplicate"){
+        setMsg("⚠️ यह मोबाइल नंबर पहले से मौजूद है!", "red");
+      } else {
+        setMsg("❌ " + (data.message || "Error"), "red");
+      }
+
+    }catch(e){
+      setMsg("❌ Network / API Error", "red");
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = "✅ Save";
+  }
+
+  async function searchNow(){
+    const q = document.getElementById("search").value.trim();
+    const box = document.getElementById("results");
+
+    if(q === ""){
+      box.innerHTML = "";
+      return;
+    }
+
+    box.innerHTML = "⏳ Searching...";
+
+    try{
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({action:"search", query:q}),
+        headers: {"Content-Type":"text/plain;charset=utf-8"}
+      });
+
+      const data = await res.json();
+
+      if(!data || !data.results || data.results.length === 0){
+        box.innerHTML = "❌ कोई डेटा नहीं मिला";
+        return;
+      }
+
+      let html = "";
+      data.results.forEach(r=>{
+        html += `
+          <div class="item">
+            <b>नाम:</b> ${r.name || ""}<br>
+            <b>मोबाइल:</b> ${r.mobile || ""}<br>
+            <b>विधानसभा:</b> ${r.vidhansabha || ""}<br>
+            <b>एरिया:</b> ${r.area || ""}
+          </div>
+        `;
+      });
+
+      box.innerHTML = html;
+
+    }catch(e){
+      box.innerHTML = "❌ Search Error";
+    }
+  }
+
+  function clearSearch(){
+    document.getElementById("search").value = "";
+    document.getElementById("results").innerHTML = "";
+  }
+</script>
+
+</body>
+</html>
