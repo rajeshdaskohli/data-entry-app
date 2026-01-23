@@ -131,6 +131,19 @@
       background:#111827;
       border-radius:10px;
     }
+    select{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:12px;
+  font-size:16px;
+  outline:none;
+  background:#fff;
+}
+select:focus{
+  border-color:#16a34a;
+  box-shadow:0 0 0 3px rgba(22,163,74,0.15);
+}
   </style>
 </head>
 
@@ -138,25 +151,38 @@
   <div class="box">
     <div class="top">
       <h2 class="title">📌 Data Entry App</h2>
-      <div class="badge">Cloud Ready</div>
+      <div class="badge"></div>
     </div>
 
     <div class="muted">नाम, मोबाइल, विधानसभा और एरिया भरकर सेव करें।</div>
 
     <label>नाम *</label>
-    <input type="text" id="name" placeholder="जैसे: राज कुमार" />
+    <input type="text" id="name" placeholder="Name" />
 
     <label>मोबाइल नंबर (10 अंक) *</label>
-    <input type="tel" id="mobile" placeholder="जैसे: 9999988888" inputmode="numeric" maxlength="10" />
+    <input type="tel" id="mobile" placeholder="Mobile" inputmode="numeric" maxlength="10" />
 
     <div class="row">
       <div>
         <label>विधानसभा</label>
-        <input type="text" id="vidhansabha" placeholder="जैसे: मुस्तफाबाद" />
+        <label>Vidhansabha</label>
+<select id="vidhansabha">
+  <option value="">Select Vidhansabha</option>
+  <option>Babarpur</option>
+  <option>Burari</option>
+  <option>Ghonda</option>
+  <option>Gokalpur</option>
+  <option>Karawal Nagar</option>
+  <option>Mustafabad</option>
+  <option>Rohtas Nagar</option>
+  <option>Seelampur</option>
+  <option>Seemapuri</option>
+  <option>Timarpur</option>
+</select>
       </div>
       <div>
         <label>एरिया</label>
-        <input type="text" id="area" placeholder="जैसे: गली नंबर 5" />
+        <input type="text" id="area" placeholder="Address" />
       </div>
     </div>
 
@@ -167,8 +193,8 @@
 
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
       <div>
-        <p class="searchTitle">🔍 Search (नाम या मोबाइल)</p>
-        <div class="muted">पहला अक्षर लिखते ही data दिखेगा</div>
+        <p class="searchTitle">🔍 Search (Name & Mobile)</p>
+        <div class="muted"></div>
       </div>
       <button class="smallBtn" onclick="clearSearch()">Clear</button>
     </div>
@@ -195,7 +221,7 @@
     const btn = document.getElementById("saveBtn");
     btn.disabled = true;
     btn.innerHTML = "⏳ Saving...";
-    setMsg("⏳ कृपया इंतजार करें...", "blue");
+    setMsg("⏳ Please wait...", "blue");
 
     const obj = {
       action: "save",
