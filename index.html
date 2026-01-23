@@ -186,28 +186,27 @@ select:focus{
 
     <button id="saveBtn" onclick="save()">✅ Save</button>
     <div id="msg"></div>
-    
-<div style="margin-top:14px;">
+
+    <div style="margin-top:14px;">
   <label>Admin PIN (Search के लिए)</label>
   <input type="password" id="adminPin" placeholder="Enter PIN">
   <button class="smallBtn" onclick="unlockSearch()">Unlock Search</button>
 </div>
 
 <div id="searchBox" style="display:none;">
-  </div>
-     <div class="hr"></div>
 
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-      <div>
-        <p class="searchTitle">🔍 Search (Name & Mobile)</p>
-        <div class="muted"></div>
-      </div>
-      <button class="smallBtn" onclick="clearSearch()">Clear</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+    <div>
+      <p class="searchTitle">🔍 Search (नाम या मोबाइल)</p>
+      <div class="muted">पहला अक्षर लिखते ही data दिखेगा</div>
     </div>
-
-    <input type="text" id="search" placeholder="Name & Number" onkeyup="searchNow()" />
-    <div id="results" class="results"></div>
+    <button class="smallBtn" onclick="clearSearch()">Clear</button>
   </div>
+
+  <input type="text" id="search" placeholder="जैसे: र / 9" onkeyup="searchNow()" />
+  <div id="results" class="results"></div>
+
+</div>
 
 <script>
   // 🔥 यहां अपना Apps Script Web App /exec URL डालें
