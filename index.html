@@ -149,7 +149,7 @@
 
 <script>
   // 🔥 यहाँ अपना Apps Script Web App /exec URL डालो
-  const API_URL = "https://script.google.com/macros/s/AKfycbx-Mqn9aPHFJksz9q_bLcth7FVFcnDylb5ouu1HUdmZqTtzt1MvivEEbEgjUlJ8XVIq/exec?action=search&q=a";
+  const API_URL = "https://script.google.com/macros/s/AKfycbxmPmpMZFeMZoOO3B0m4oTQNsEFB3bhtkXkFk4pwmVZgrMQbZsZKjkFGNl_bTY1yhsN/exec";
 
   // 🔥 यहाँ अपना PIN सेट करो
   const ADMIN_PIN = "7860";
@@ -221,16 +221,37 @@
   }
 
   // Search (Frontend में अभी demo)
-  function searchNow(){
-    // अभी search सिर्फ UI में है (चाहो तो मैं API से search भी जोड़ दूँ)
-    const q = document.getElementById("search").value.trim().toLowerCase();
-    const results = document.getElementById("results");
-    if(!q){
-      results.innerHTML = "";
-      return;
-    }
-    results.innerHTML = `<div class="resultItem">🔎 आपने search किया: <b>${q}</b><br>(API search जोड़ना हो तो बताओ)</div>`;
+  async function searchNow() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const results = document.getElementById("results");
+  
+  if (q.length < 1) { // कम से कम 1 अक्षर होने पर सर्च शुरू होगा
+    results.innerHTML = "";
+    return;
   }
+
+  results.innerHTML = "⏳ Searching...";
+
+  try {
+    // हम GET रिक्वेस्ट भेजेंगे जिसमें action=search और query होगी
+    const res = await fetch(`${API_URL}?action=search&q=${q}`);
+    const data = await res.json();
+
+    if (data.status === "success" && data.results.length > 0) {
+      results.innerHTML = data.results.map(item => `
+        <div class="resultItem">
+          <strong>👤 ${item.name}</strong><br>
+          📱 ${item.mobile} | 🏛️ ${item.vidhansabha}<br>
+          📍 ${item.area}
+        </div>
+      `).join('');
+    } else {
+      results.innerHTML = '<div class="resultItem">❌ कोई रिकॉर्ड नहीं मिला</div>';
+    }
+  } catch (e) {
+    results.innerHTML = '<div class="resultItem">❌ सर्च करने में समस्या आई</div>';
+  }
+}
 </script>
 
 </body>
