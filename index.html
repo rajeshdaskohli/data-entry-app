@@ -6,111 +6,33 @@
   <title>SM Sevadar NED</title>
 
   <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#f3f4f6;
-      margin:0;
-      padding:20px;
-    }
-    .card{
-      max-width:520px;
-      margin:auto;
-      background:#fff;
-      padding:18px;
-      border-radius:18px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.08);
-    }
-    h2{
-      margin:0 0 6px 0;
-      font-size:22px;
-    }
-    .sub{
-      color:#6b7280;
-      margin-bottom:14px;
-      font-size:14px;
-    }
-    label{
-      font-weight:700;
-      display:block;
-      margin:12px 0 6px;
-    }
-    input, select{
-      width:100%;
-      padding:12px;
-      border:1px solid #d1d5db;
-      border-radius:14px;
-      font-size:16px;
-      outline:none;
-      box-sizing:border-box;
-      background:#fff;
-    }
-    input:focus, select:focus{
-      border-color:#16a34a;
-      box-shadow:0 0 0 3px rgba(22,163,74,0.15);
-    }
-    .btn{
-      width:100%;
-      padding:14px;
-      margin-top:16px;
-      background:#16a34a;
-      color:#fff;
-      border:none;
-      border-radius:14px;
-      font-size:18px;
-      font-weight:800;
-      cursor:pointer;
-    }
-    .btn:disabled{
-      opacity:0.6;
-      cursor:not-allowed;
-    }
-    .msg{
-      margin-top:12px;
-      font-weight:700;
-    }
-    .pinBox{
-      margin-top:18px;
-      padding-top:12px;
-      border-top:1px solid #e5e7eb;
-    }
-    .smallBtn{
-      margin-top:10px;
-      background:#111827;
-      color:#fff;
-      border:none;
-      padding:10px 14px;
-      border-radius:12px;
-      font-weight:700;
-      cursor:pointer;
-    }
-    #searchBox{
-      margin-top:14px;
-      padding:12px;
-      background:#f9fafb;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-    }
-    .resultItem{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      padding:10px;
-      border-radius:12px;
-      margin-top:10px;
-      font-size:14px;
-    }
+    body{font-family:Arial, sans-serif; background:#f3f4f6; margin:0; padding:18px;}
+    .card{max-width:520px; margin:auto; background:#fff; padding:18px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08);}
+    h1{margin:0 0 8px 0; font-size:24px;}
+    .sub{color:#666; margin-bottom:16px;}
+    label{display:block; margin:14px 0 6px; font-weight:700;}
+    input, select{width:100%; padding:14px; border-radius:14px; border:1px solid #ddd; font-size:16px; outline:none;}
+    input:focus, select:focus{border-color:#16a34a; box-shadow:0 0 0 3px rgba(22,163,74,.15);}
+    .btn{width:100%; margin-top:16px; padding:16px; border:none; border-radius:16px; background:#16a34a; color:#fff; font-size:18px; font-weight:800;}
+    .btn:disabled{opacity:.6;}
+    .msg{margin-top:10px; font-weight:800;}
+    .smallBtn{padding:10px 14px; border:none; border-radius:12px; background:#111827; color:#fff; font-weight:700; margin-top:10px;}
+    .resultItem{background:#f9fafb; border:1px solid #eee; padding:12px; border-radius:14px; margin-top:10px; line-height:1.4;}
+    .row{display:flex; gap:10px; align-items:center;}
+    .row input{flex:1;}
   </style>
 </head>
 
 <body>
   <div class="card">
-    <h2>🌍 SM Sevadar NED</h2>
+    <h1>🌍 SM Sevadar NED</h1>
     <div class="sub">नाम, मोबाइल, विधानसभा और एरिया भरकर सेव करें।</div>
 
     <label>नाम *</label>
-    <input type="text" id="name" placeholder="Name" />
+    <input id="name" placeholder="Name" />
 
     <label>मोबाइल नंबर (10 अंक) *</label>
-    <input type="text" id="mobile" placeholder="Mobile" />
+    <input id="mobile" placeholder="Mobile" inputmode="numeric" />
 
     <label>विधानसभा</label>
     <select id="vidhansabha">
@@ -128,31 +50,29 @@
     </select>
 
     <label>एरिया</label>
-    <input type="text" id="area" placeholder="Area" />
+    <input id="area" placeholder="Area" />
 
     <button id="saveBtn" class="btn" type="button" onclick="saveData()">✅ Save</button>
 
     <div id="msg" class="msg"></div>
 
-    <div class="pinBox">
-      <label>Admin PIN (Search के लिए)</label>
-      <input type="password" id="adminPin" placeholder="Enter PIN" />
-      <button class="smallBtn" type="button" onclick="unlockSearch()">Unlock Search</button>
+    <hr style="margin:18px 0; border:none; border-top:1px solid #eee;">
 
-      <div id="searchBox" style="display:none;">
-        <label>Search (Name/Mobile starts with)</label>
-        <input type="text" id="search" placeholder="जैसे: R / 9" onkeyup="searchNow()" />
-        <div id="results"></div>
-      </div>
+    <label>Admin PIN (Search के लिए)</label>
+    <input type="password" id="adminPin" placeholder="Enter PIN">
+
+    <button class="smallBtn" type="button" onclick="unlockSearch()">Unlock Search</button>
+
+    <div id="searchBox" style="display:none; margin-top:14px;">
+      <label>Search (Name/Mobile starts with)</label>
+      <input id="search" placeholder="पहला अक्षर लिखें..." oninput="searchNow()">
+      <div id="results"></div>
     </div>
   </div>
 
 <script>
-  // 🔥 यहाँ अपना Apps Script Web App /exec URL डालो
   const API_URL = "https://script.google.com/macros/s/AKfycbwiBj0g2Zm62-WfHMBPxsXNh24J4RSb8pIqOsCPRcqokRNH0MS3thLWiObNic3r2h4e/exec";
-
-  // 🔥 यहाँ अपना PIN सेट करो
-  const ADMIN_PIN = "1326";
+  const ADMIN_PIN = "7860"; // 🔥 अपना PIN यहाँ बदलो
 
   function setMsg(text, color){
     const msg = document.getElementById("msg");
@@ -182,10 +102,10 @@
 
     try{
       const res = await fetch(API_URL, {
-  method: "POST",
-  headers: {"Content-Type":"text/plain;charset=utf-8"},
-  body: JSON.stringify({name, mobile, vidhansabha, area})
-});
+        method: "POST",
+        headers: {"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify({name, mobile, vidhansabha, area})
+      });
 
       const data = await res.json();
 
@@ -214,22 +134,61 @@
     if(pin === ADMIN_PIN){
       document.getElementById("searchBox").style.display = "block";
       setMsg("✅ Search unlocked", "green");
-    }else{
+    } else {
       document.getElementById("searchBox").style.display = "none";
       setMsg("❌ Wrong PIN", "red");
     }
   }
 
-  // Search (Frontend में अभी demo)
+  let searchTimer = null;
+
   function searchNow(){
-    // अभी search सिर्फ UI में है (चाहो तो मैं API से search भी जोड़ दूँ)
-    const q = document.getElementById("search").value.trim().toLowerCase();
-    const results = document.getElementById("results");
-    if(!q){
-      results.innerHTML = "";
-      return;
-    }
-    results.innerHTML = `<div class="resultItem">🔎 आपने search किया: <b>${q}</b><br>(API search जोड़ना हो तो बताओ)</div>`;
+    clearTimeout(searchTimer);
+
+    searchTimer = setTimeout(async () => {
+      const q = document.getElementById("search").value.trim();
+      const results = document.getElementById("results");
+
+      if(!q){
+        results.innerHTML = "";
+        return;
+      }
+
+      results.innerHTML = "⏳ Searching...";
+
+      try{
+        const url = API_URL + "?action=search&q=" + encodeURIComponent(q);
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if(data.status !== "success"){
+          results.innerHTML = "❌ Search error";
+          return;
+        }
+
+        if(!data.data || data.data.length === 0){
+          results.innerHTML = "❌ कोई data नहीं मिला";
+          return;
+        }
+
+        let html = "";
+        data.data.forEach(row => {
+          html += `
+            <div class="resultItem">
+              <b>Name:</b> ${row[0]}<br>
+              <b>Mobile:</b> ${row[1]}<br>
+              <b>Vidhansabha:</b> ${row[2]}<br>
+              <b>Area:</b> ${row[3]}
+            </div>
+          `;
+        });
+
+        results.innerHTML = html;
+
+      } catch(e){
+        results.innerHTML = "❌ Network error";
+      }
+    }, 300);
   }
 </script>
 
