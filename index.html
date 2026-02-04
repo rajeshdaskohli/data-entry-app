@@ -3,150 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Expense Seva Dashboard</title>
+  <title>Expense Seva Pro</title>
   <style>
     :root { --primary: #111; --bg: #f4f6f9; --success: #27ae60; --danger: #e74c3c; }
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; background: var(--bg); color: #1a1a1a; padding-bottom: 30px; }
-    
-    /* टॉप बार */
-    .topbar { background: var(--primary); color: #fff; padding: 18px; font-weight: bold; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { margin: 0; background: var(--bg); padding-bottom: 30px; }
     
     .container { max-width: 500px; margin: 0 auto; padding: 15px; }
 
-    /* ऊपर के 4 फिक्स्ड कार्ड्स */
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .sum-card { background: #fff; padding: 15px; border-radius: 18px; border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    .sum-card h4 { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-    .sum-card p { margin: 8px 0 0; font-size: 20px; font-weight: 800; }
+    /* ऊपर वाले 4 मुख्य कार्ड्स */
+    .top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .card-main { background: #fff; padding: 15px; border-radius: 18px; border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .card-main h4 { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; }
+    .card-main p { margin: 8px 0 0; font-size: 20px; font-weight: 800; }
 
-    /* कैटेगरी कार्ड्स - अब ये भी फिक्स रहेंगे */
-    .section-title { font-weight: 800; margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; font-size: 15px; }
+    /* कैटेगरी कार्ड्स - अब ये फिक्स रहेंगे */
+    .cat-section-title { font-weight: 800; margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
     .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    .cat-card { background: #fff; padding: 12px 5px; border-radius: 14px; text-align: center; border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-    .cat-card h5 { margin: 0; font-size: 10px; color: #888; text-transform: uppercase; }
-    .cat-card p { margin: 5px 0 0; font-size: 14px; font-weight: 700; color: #111; }
+    .cat-card-fixed { 
+      background: #fff; 
+      padding: 12px 5px; 
+      border-radius: 15px; 
+      text-align: center; 
+      border: 1px solid #eee; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      transition: 0.3s;
+    }
+    .cat-card-fixed h5 { margin: 0; font-size: 10px; color: #888; text-transform: uppercase; }
+    .cat-card-fixed p { margin: 5px 0 0; font-size: 14px; font-weight: 700; color: #111; }
 
-    /* बैंक और कार्ड लिस्ट */
-    .list-container { background: #fff; border-radius: 20px; padding: 5px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
-    .row-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f9f9f9; }
-    .row-item:last-child { border-bottom: none; }
-    .row-item span { font-weight: 600; font-size: 14px; }
+    /* बैंक और क्रेडिट कार्ड लिस्ट डिजाइन */
+    .white-box { background: #fff; border-radius: 20px; padding: 5px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .row-data { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f9f9f9; }
+    .row-data:last-child { border-bottom: none; }
     
     .val-pos { color: var(--success); font-weight: 800; }
     .val-neg { color: var(--danger); font-weight: 800; }
-    .subtotal-header { display: flex; justify-content: space-between; padding: 15px 5px 10px; font-weight: 800; font-size: 15px; }
-
-    /* लोडिंग स्टेट */
-    #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; font-weight: bold; }
+    .sub-head { display: flex; justify-content: space-between; padding: 10px 5px; font-weight: 800; }
   </style>
 </head>
 <body>
 
-  <div id="loader">डेटा लोड हो रहा है...</div>
-
-  <div class="topbar">
-    <span>DASHBOARD</span>
-    <span onclick="refreshData()" style="cursor:pointer; font-size: 18px;">🔄</span>
+<div class="container">
+  <div class="top-grid">
+    <div class="card-main" style="border-color:#ff9800"><h4>Today</h4><p id="sumToday">₹0</p></div>
+    <div class="card-main" style="border-color:#e91e63"><h4>Month</h4><p id="sumMonth">₹0</p></div>
+    <div class="card-main" style="border-color:#4caf50"><h4>Funds</h4><p id="sumFund">₹0</p></div>
+    <div class="card-main" style="border-color:#2196f3" onclick="refreshData()"><h4>Status</h4><p id="syncStatus" style="font-size:14px">Sync 🔄</p></div>
   </div>
 
-  <div class="container">
-    <div class="summary-grid">
-      <div class="sum-card" style="border-color:#ff9800"><h4>Today</h4><p id="sumToday">₹0</p></div>
-      <div class="sum-card" style="border-color:#e91e63"><h4>Month</h4><p id="sumMonth">₹0</p></div>
-      <div class="sum-card" style="border-color:#4caf50"><h4>Funds</h4><p id="sumFund">₹0</p></div>
-      <div class="sum-card" style="border-color:#2196f3"><h4>Action</h4><p style="font-size:14px">Deposit 🏦</p></div>
+  <div class="cat-section-title">🏷️ Category Summary</div>
+  
+  <div class="cat-grid" id="categoryContainer">
     </div>
 
-    <div class="section-title">🏷️ Category Summary</div>
-    <div class="cat-grid" id="catSummaryGrid">
-      </div>
+  <div class="sub-head"><span>🏦 Bank Accounts</span><span id="bankSubtotal" class="val-pos">₹0</span></div>
+  <div class="white-box" id="bankList"></div>
 
-    <div class="subtotal-header">
-      <span>🏦 Bank Accounts</span>
-      <span id="bankSubtotal" class="val-pos">₹0.00</span>
-    </div>
-    <div class="list-container" id="bankList"></div>
+  <div class="sub-head"><span>💳 Credit Cards</span><span id="cardSubtotal" class="val-neg">₹0</span></div>
+  <div class="white-box" id="cardList"></div>
+</div>
 
-    <div class="subtotal-header">
-      <span>💳 Credit Cards</span>
-      <span id="cardSubtotal" class="val-neg">₹0.00</span>
-    </div>
-    <div class="list-container" id="cardList"></div>
+<script>
+  const API_URL = "YOUR_SCRIPT_URL_HERE"; 
 
-    <div class="section-title">🕒 Recent Activity</div>
-    <div class="list-container" id="historyList"></div>
-  </div>
-
-  <script>
-    // अपना Web App URL यहाँ डालें
-    const API_URL = "YOUR_SCRIPT_URL_HERE"; 
-
-    async function refreshData() {
-      document.getElementById("loader").style.display = "flex";
-      try {
-        const response = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) });
-        const res = await response.json();
-        if(res.ok) { 
-          renderUI(res);
-          document.getElementById("loader").style.display = "none";
-        }
-      } catch(e) { 
-        alert("डेटा लोड करने में समस्या आई!");
-        document.getElementById("loader").style.display = "none";
+  async function refreshData() {
+    document.getElementById("syncStatus").innerText = "Loading...";
+    try {
+      const response = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) });
+      const res = await response.json();
+      if(res.ok) { 
+        updateDashboard(res);
+        document.getElementById("syncStatus").innerText = "Success ✅";
       }
+    } catch(e) { 
+      document.getElementById("syncStatus").innerText = "Error ❌";
     }
+  }
 
-    function renderUI(db) {
-      const s = db.summary;
+  function updateDashboard(db) {
+    const s = db.summary;
 
-      // टॉप कार्ड्स अपडेट
-      document.getElementById("sumToday").innerText = "₹" + s.todayExp;
-      document.getElementById("sumMonth").innerText = "₹" + s.monthExp;
-      document.getElementById("sumFund").innerText = "₹" + s.monthFund;
+    // 1. टॉप कार्ड्स अपडेट
+    document.getElementById("sumToday").innerText = "₹" + s.todayExp;
+    document.getElementById("sumMonth").innerText = "₹" + s.monthExp;
+    document.getElementById("sumFund").innerText = "₹" + s.monthFund;
 
-      // 1. कैटेगरी कार्ड्स फिक्स (हमेशा Categories शीट के हिसाब से दिखेंगे)
-      let catHTML = "";
-      db.categories.forEach(name => {
-        let val = Number(s.catTotals[name] || 0); // अगर डेटा नहीं है तो 0 दिखाएगा
-        catHTML += `
-          <div class="cat-card">
-            <h5>${name}</h5>
-            <p>₹${val.toFixed(0)}</p>
-          </div>`;
-      });
-      document.getElementById("catSummaryGrid").innerHTML = catHTML;
+    // 2. कैटेगरी कार्ड्स (फिक्स्ड लेआउट - 3 कॉलम ग्रिड)
+    let catHTML = "";
+    db.categories.forEach(name => {
+      let amount = Number(s.catTotals[name] || 0);
+      catHTML += `
+        <div class="cat-card-fixed">
+          <h5>${name}</h5>
+          <p>₹${amount.toFixed(0)}</p>
+        </div>`;
+    });
+    document.getElementById("categoryContainer").innerHTML = catHTML;
 
-      // 2. बैंक लिस्ट और शुद्ध सब-टोटल (Math Fix)
-      let bSum = 0;
-      let bHTML = db.banks.map(b => {
-        let amt = Number(b.balance);
-        bSum += amt; // अब ये सही से जुड़ेगा
-        return `<div class="row-item"><span>${b.name}</span><span class="val-pos">₹${amt.toFixed(2)}</span></div>`;
-      }).join("");
-      document.getElementById("bankList").innerHTML = bHTML;
-      document.getElementById("bankSubtotal").innerText = "₹" + bSum.toFixed(2);
+    // 3. बैंक लिस्ट (संख्याओं को सही से जोड़ना)
+    let bSum = 0;
+    let bHTML = db.banks.map(b => {
+      let val = Number(b.balance);
+      bSum += val; // String concatenation fix
+      return `<div class="row-data"><span>${b.name}</span><span class="val-pos">₹${val.toFixed(2)}</span></div>`;
+    }).join("");
+    document.getElementById("bankList").innerHTML = bHTML;
+    document.getElementById("bankSubtotal").innerText = "₹" + bSum.toFixed(2);
 
-      // 3. क्रेडिट कार्ड लिस्ट और शुद्ध सब-टोटल
-      let cSum = 0;
-      let cHTML = db.cards.map(c => {
-        let due = Number(c.due);
-        cSum += due;
-        return `<div class="row-item"><span>${c.name}</span><span class="val-neg">₹${due.toFixed(2)}</span></div>`;
-      }).join("");
-      document.getElementById("cardList").innerHTML = cHTML;
-      document.getElementById("cardSubtotal").innerText = "₹" + cSum.toFixed(2);
+    // 4. क्रेडिट कार्ड लिस्ट
+    let cSum = 0;
+    let cHTML = db.cards.map(c => {
+      let due = Number(c.due);
+      cSum += due;
+      return `<div class="row-data"><span>${c.name}</span><span class="val-neg">₹${due.toFixed(2)}</span></div>`;
+    }).join("");
+    document.getElementById("cardList").innerHTML = cHTML;
+    document.getElementById("cardSubtotal").innerText = "₹" + cSum.toFixed(2);
+  }
 
-      // 4. इतिहास
-      document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `
-        <div class="row-item">
-          <div style="font-size:12px;"><b>${t.name}</b><br><small style="color:#888;">${t.dateTime}</small></div>
-          <b class="${t.type.includes('Fund')?'val-pos':'val-neg'}">₹${t.amount}</b>
-        </div>
-      `).join("");
-    }
+  window.onload = refreshData;
+</script>
 
-    window.onload = refreshData;
-  </script>
 </body>
 </html>
