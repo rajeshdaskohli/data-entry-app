@@ -1,122 +1,128 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="theme-color" content="#111">
-  <title>Expense Seva Pro</title>
-  <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Roboto, sans-serif; }
-    body { margin: 0; background: #f4f6f9; color: #1a1a1a; }
-    .topbar { background: #111; color: #fff; padding: 15px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 1000; }
-    .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-    .page { display: none; }
-    .page.active { display: block; }
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .sum-card { background: #fff; padding: 15px; border-radius: 20px; border-left: 6px solid #111; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .sum-card h4 { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; }
-    .sum-card p { margin: 5px 0 0; font-size: 18px; font-weight: 800; }
-    .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
-    .cat-mini-card { background: #fff; padding: 12px 8px; border-radius: 14px; text-align: center; border: 1px solid #eee; }
-    .row-card { display: flex; justify-content: space-between; align-items: center; padding: 14px; background: #fff; border-radius: 15px; margin-bottom: 8px; border: 1px solid #eee; }
-    .val-pos { color: #27ae60; font-weight: 800; }
-    .val-neg { color: #e74c3c; font-weight: 800; }
-    .btn { width: 100%; height: 54px; background: #111; color: #fff; border: none; border-radius: 15px; font-size: 17px; font-weight: 700; cursor: pointer; }
-    .inp { width: 100%; height: 50px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 12px; padding: 0 15px; margin-bottom: 15px; font-size: 16px; outline: none; }
-    .lbl { font-size: 13px; font-weight: 700; color: #444; margin-bottom: 5px; display: block; }
-    .hist-tag { font-size: 9px; padding: 2px 6px; background: #f0f0f0; border-radius: 4px; width: fit-content; margin-top: 3px; font-weight: 700; }
-    .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); background: #111; color: #fff; padding: 12px 25px; border-radius: 50px; display: none; z-index: 3000; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense App</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;font-family:Poppins}
+body{
+  background:#f4f6fb;
+  padding:20px;
+  max-width:420px;
+  margin:auto;
+}
+
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+  animation:fadeIn .6s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+h2{text-align:center;margin-bottom:20px}
+
+input,select{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+button{
+  position:relative;
+  overflow:hidden;
+  width:100%;
+  padding:14px;
+  background:linear-gradient(135deg,#7b2ff7,#f107a3);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+button span{
+  position:absolute;
+  border-radius:50%;
+  transform:scale(0);
+  animation:ripple .6s linear;
+  background:rgba(255,255,255,.6);
+}
+
+@keyframes ripple{
+  to{transform:scale(4);opacity:0}
+}
+
+#msg{text-align:center;margin-top:10px}
+</style>
 </head>
+
 <body>
 
-  <div class="topbar">
-    <button style="background:none; border:none; color:#fff; font-size:24px;" id="leftBtn">☰</button>
-    <div><b id="pageTitle">DASHBOARD</b><br><small>EXPENSE SEVA</small></div>
-  </div>
+<div class="card">
+  <h2>Expense App</h2>
 
-  <div class="container">
-    <div class="page active" id="pageDashboard">
-      <div class="summary-grid">
-        <div class="sum-card" style="border-color:#ff9800"><h4>Today</h4><p id="sumToday">₹0</p></div>
-        <div class="sum-card" style="border-color:#e91e63"><h4>Month</h4><p id="sumMonth">₹0</p></div>
-        <div class="sum-card" style="border-color:#4caf50"><h4>Funds</h4><p id="sumFund">₹0</p></div>
-        <div class="sum-card" style="border-color:#111" onclick="showPage('addfund')"><h4>Action</h4><p style="font-size:13px">Deposit 🏦</p></div>
-      </div>
+  <select id="type">
+    <option>Cash</option>
+    <option>Bank</option>
+    <option>Credit Card</option>
+  </select>
 
-      <div style="font-weight:800; margin: 15px 0 8px;">🏷️ Category Summary</div>
-      <div class="cat-grid" id="catSummaryGrid"></div>
+  <input type="number" id="amount" placeholder="Amount ₹">
+  <input type="text" id="note" placeholder="Note (optional)">
 
-      <div style="display:flex; justify-content:space-between; margin: 20px 0 10px;"><span style="font-weight:800;">🏦 Bank Accounts</span><span id="bankSubtotal" class="val-pos">₹0</span></div>
-      <div id="bankList"></div>
+  <button onclick="saveExpense(event)">Save Expense</button>
 
-      <div style="display:flex; justify-content:space-between; margin: 20px 0 10px;"><span style="font-weight:800;">💳 Credit Cards</span><span id="cardSubtotal" class="val-neg">₹0</span></div>
-      <div id="cardList"></div>
+  <div id="msg"></div>
+</div>
 
-      <div style="font-weight:800; margin: 20px 0 10px;">🕒 Recent Activity</div>
-      <div id="historyList"></div>
-    </div>
-    </div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyUxy4omEAx6jP5dVGPUrM3-rqEHE7cznUhFHocuhEb61jKnWAXzQ6VRO5vl6YkeT9R/exec";
 
-  <div class="toast" id="toast"></div>
+function saveExpense(e){
+  ripple(e);
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwXkJo6belMLPwHAEQLoA9VD1MNCArzuddtcqYRQSFsvTeuo0tjP8Ilut5ZU0Yf4HtA/exec"; 
-    let db = { banks: [], cards: [], categories: [], summary: { recentTrans: [], catTotals: {} } };
+  const data={
+    type:type.value,
+    amount:amount.value,
+    note:note.value
+  };
 
-    async function refreshData() {
-      try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
-        if(res.ok) { db = res; updateDashboardUI(); }
-      } catch(e) { console.error(e); }
-    }
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify(data)
+  })
+  .then(r=>r.text())
+  .then(res=>{
+    msg.innerText="Saved Successfully ✅";
+    amount.value="";
+    note.value="";
+  });
+}
 
-    function updateDashboardUI() {
-      const s = db.summary;
-      document.getElementById("sumToday").innerText = "₹" + s.todayExp;
-      document.getElementById("sumMonth").innerText = "₹" + s.monthExp;
-      document.getElementById("sumFund").innerText = "₹" + s.monthFund;
+function ripple(e){
+  const btn=e.currentTarget;
+  const circle=document.createElement("span");
+  const size=Math.max(btn.clientWidth,btn.clientHeight);
+  circle.style.width=circle.style.height=size+"px";
+  circle.style.left=e.offsetX-size/2+"px";
+  circle.style.top=e.offsetY-size/2+"px";
+  btn.appendChild(circle);
+  setTimeout(()=>circle.remove(),600);
+}
+</script>
 
-      let catHTML = "";
-      db.categories.slice(0, 6).forEach(name => {
-        let val = s.catTotals[name] || 0;
-        catHTML += `<div class="cat-mini-card"><h5>${name}</h5><p>₹${val.toFixed(0)}</p></div>`;
-      });
-      document.getElementById("catSummaryGrid").innerHTML = catHTML;
-
-      let bSum = 0;
-      document.getElementById("bankList").innerHTML = db.banks.map(b => {
-        bSum += parseFloat(b.balance);
-        return `<div class="row-card"><span>${b.name}</span><span class="val-pos">₹${b.balance}</span></div>`;
-      }).join("");
-      document.getElementById("bankSubtotal").innerText = "₹" + bSum.toFixed(2);
-
-      let cSum = 0;
-      document.getElementById("cardList").innerHTML = db.cards.map(c => {
-        cSum += parseFloat(c.due);
-        return `<div class="row-card"><span>${c.name}</span><span class="val-neg">₹${c.due}</span></div>`;
-      }).join("");
-      document.getElementById("cardSubtotal").innerText = "₹" + cSum.toFixed(2);
-
-      document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `
-        <div class="row-card">
-          <div style="display:flex; flex-direction:column;">
-            <span style="font-weight:700;">${t.name}</span>
-            <small style="font-size:9px; color:#888;">🕒 ${t.date}</small>
-            <span class="hist-tag">${t.type}</span>
-          </div>
-          <b class="${t.type.includes('Fund')?'val-pos':'val-neg'}">₹${t.amount}</b>
-        </div>
-      `).join("");
-    }
-
-    function showPage(name) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
-      if(name === 'dashboard') refreshData();
-    }
-
-    window.onload = refreshData;
-  </script>
 </body>
 </html>
