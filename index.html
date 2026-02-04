@@ -3,74 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="theme-color" content="#111">
-  <title>Expense Seva Pro</title>
+  <title>Expense Seva Pro Fix</title>
   <style>
     :root { --primary: #111; --bg: #f4f6f9; --success: #27ae60; --danger: #e74c3c; }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-    body { margin: 0; background: var(--bg); color: #1a1a1a; padding-bottom: 20px; }
-    .topbar { background: var(--primary); color: #fff; padding: 15px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 1000; }
+    * { box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; background: var(--bg); padding-bottom: 30px; }
+    .topbar { background: var(--primary); color: #fff; padding: 18px; font-weight: bold; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; }
     .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-    .page { display: none; } .page.active { display: block; }
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .sum-card { background: #fff; padding: 15px; border-radius: 18px; border-left: 5px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .sum-card { background: #fff; padding: 15px; border-radius: 15px; border-left: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .sum-card h4 { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; }
-    .sum-card p { margin: 5px 0 0; font-size: 18px; font-weight: 800; }
-    .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
-    .cat-mini-card { background: #fff; padding: 12px 5px; border-radius: 14px; text-align: center; border: 1px solid #eee; }
+    .sum-card p { margin: 8px 0 0; font-size: 18px; font-weight: 800; }
+    .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+    .cat-mini-card { background: #fff; padding: 12px 5px; border-radius: 12px; text-align: center; border: 1px solid #eee; }
     .cat-mini-card h5 { margin: 0; font-size: 10px; color: #888; text-transform: uppercase; }
-    .cat-mini-card p { margin: 4px 0 0; font-size: 13px; font-weight: 700; }
-    .row-card { display: flex; justify-content: space-between; align-items: center; padding: 14px; background: #fff; border-radius: 15px; margin-bottom: 8px; border: 1px solid #eee; }
-    .section-header { display: flex; justify-content: space-between; margin: 20px 0 10px; font-weight: 800; }
+    .cat-mini-card p { margin: 5px 0 0; font-size: 13px; font-weight: 700; color: #111; }
+    .row-card { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #fff; border-radius: 15px; margin-bottom: 10px; border: 1px solid #eee; }
+    .section-header { display: flex; justify-content: space-between; margin: 25px 0 10px; font-weight: 800; font-size: 14px; }
     .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fff; border-bottom: 1px solid #f0f0f0; }
     .val-pos { color: var(--success); font-weight: 800; }
     .val-neg { color: var(--danger); font-weight: 800; }
-    .btn { width: 100%; height: 50px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 700; margin-top: 10px; cursor: pointer; }
-    .toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%); background: #111; color: #fff; padding: 10px 20px; border-radius: 50px; display: none; z-index: 3000; }
   </style>
 </head>
 <body>
 
   <div class="topbar">
-    <div style="font-size:20px;">☰</div>
-    <b>DASHBOARD</b>
+    <span>DASHBOARD</span>
+    <span onclick="refreshData()" style="cursor:pointer">🔄</span>
   </div>
 
   <div class="container">
-    <div class="page active" id="pageDashboard">
-      <div class="summary-grid">
-        <div class="sum-card" style="border-color:#ff9800"><h4>Today</h4><p id="sumToday">₹0</p></div>
-        <div class="sum-card" style="border-color:#e91e63"><h4>Month</h4><p id="sumMonth">₹0</p></div>
-        <div class="sum-card" style="border-color:#4caf50"><h4>Funds</h4><p id="sumFund">₹0</p></div>
-        <div class="sum-card" onclick="refreshData()"><h4>Sync</h4><p style="font-size:12px; color:#888;">Refresh 🔄</p></div>
-      </div>
-
-      <div style="font-weight:800; margin-bottom:10px;">🏷️ Category Summary</div>
-      <div class="cat-grid" id="catSummaryGrid"></div>
-
-      <div class="section-header"><span>🏦 Bank Accounts</span><span id="bankSubtotal" class="val-pos">₹0</span></div>
-      <div id="bankList"></div>
-
-      <div class="section-header"><span>💳 Credit Cards</span><span id="cardSubtotal" class="val-neg">₹0</span></div>
-      <div id="cardList"></div>
-
-      <div style="font-weight:800; margin: 20px 0 10px;">🕒 Recent Activity</div>
-      <div id="historyList" style="background:#fff; border-radius:15px; overflow:hidden;"></div>
+    <div class="summary-grid">
+      <div class="sum-card" style="border-color:#ff9800"><h4>Today</h4><p id="sumToday">₹0</p></div>
+      <div class="sum-card" style="border-color:#e91e63"><h4>Month Exp</h4><p id="sumMonth">₹0</p></div>
+      <div class="sum-card" style="border-color:#4caf50"><h4>Month Fund</h4><p id="sumFund">₹0</p></div>
+      <div class="sum-card"><h4>Activity</h4><p id="sumCount" style="font-size:14px; color:#888;">0 Trans.</p></div>
     </div>
-  </div>
 
-  <div class="toast" id="toast"></div>
+    <div style="font-weight:800; margin-bottom:10px;">🏷️ Category Summary</div>
+    <div class="cat-grid" id="catSummaryGrid"></div>
+
+    <div class="section-header"><span>🏦 Bank Accounts</span><span id="bankSubtotal" class="val-pos">₹0.00</span></div>
+    <div id="bankList"></div>
+
+    <div class="section-header"><span>💳 Credit Cards</span><span id="cardSubtotal" class="val-neg">₹0.00</span></div>
+    <div id="cardList"></div>
+
+    <div style="font-weight:800; margin: 25px 0 10px;">🕒 Recent Activity</div>
+    <div id="historyList" style="background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 4px 6px rgba(0,0,0,0.05);"></div>
+  </div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwXkJo6belMLPwHAEQLoA9VD1MNCArzuddtcqYRQSFsvTeuo0tjP8Ilut5ZU0Yf4HtA/exec"; 
     let db = { categories: [], banks: [], cards: [], summary: { recentTrans: [], catTotals: {} } };
 
     async function refreshData() {
-      showToast("Syncing data...");
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
         if(res.ok) { db = res; updateUI(); }
-      } catch(e) { showToast("Sync Failed ❌"); }
+      } catch(e) { alert("Network Error!"); }
     }
 
     function updateUI() {
@@ -78,43 +69,39 @@
       document.getElementById("sumToday").innerText = "₹" + s.todayExp;
       document.getElementById("sumMonth").innerText = "₹" + s.monthExp;
       document.getElementById("sumFund").innerText = "₹" + s.monthFund;
+      document.getElementById("sumCount").innerText = s.recentTrans.length + " Recent";
 
-      // 1. FIXED CATEGORY CARDS
+      // 1. कैटेगरी कार्ड्स (हमेशा फिक्स रहेंगे)
       document.getElementById("catSummaryGrid").innerHTML = db.categories.map(name => {
-        let val = s.catTotals[name] || 0;
-        return `<div class="cat-mini-card"><h5>${name}</h5><p>₹${Number(val).toFixed(0)}</p></div>`;
+        let val = Number(s.catTotals[name] || 0);
+        return `<div class="cat-mini-card"><h5>${name}</h5><p>₹${val.toFixed(0)}</p></div>`;
       }).join("");
 
-      // 2. BANK LIST + ACCURATE SUBTOTAL
+      // 2. बैंक लिस्ट और साफ़ सब-टोटल
       let bSum = 0;
       document.getElementById("bankList").innerHTML = db.banks.map(b => {
-        let amt = parseFloat(b.balance);
+        let amt = Number(b.balance); // पक्का नंबर
         bSum += amt;
         return `<div class="row-card"><span>${b.name}</span><span class="val-pos">₹${amt.toFixed(2)}</span></div>`;
       }).join("");
       document.getElementById("bankSubtotal").innerText = "₹" + bSum.toFixed(2);
 
-      // 3. CARD LIST + ACCURATE SUBTOTAL
+      // 3. कार्ड लिस्ट और साफ़ सब-टोटल
       let cSum = 0;
       document.getElementById("cardList").innerHTML = db.cards.map(c => {
-        let amt = parseFloat(c.due);
+        let amt = Number(c.due); // पक्का नंबर
         cSum += amt;
         return `<div class="row-card"><span>${c.name}</span><span class="val-neg">₹${amt.toFixed(2)}</span></div>`;
       }).join("");
       document.getElementById("cardSubtotal").innerText = "₹" + cSum.toFixed(2);
 
-      // 4. RECENT ACTIVITY
+      // 4. रीसेंट एक्टिविटी
       document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `
         <div class="hist-item">
           <div><b>${t.name}</b><br><small style="color:#888;">${t.dateTime}</small></div>
           <b class="${t.type.includes('Fund') ? 'val-pos' : 'val-neg'}">₹${t.amount}</b>
         </div>
       `).join("");
-    }
-
-    function showToast(m) { 
-      const t = document.getElementById("toast"); t.innerText = m; t.style.display="block"; 
-      setTimeout(() => t.style.display="none", 2000); 
     }
 
     window.onload = refreshData;
