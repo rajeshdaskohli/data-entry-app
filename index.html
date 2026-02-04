@@ -1,137 +1,186 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Expense Dashboard</title>
-  <style>
-    :root { --bg: #f4f6f9; --dark: #1e1e2d; --green: #2ecc71; --red: #e74c3c; }
-    body { margin: 0; background: var(--bg); font-family: sans-serif; padding-bottom: 30px; }
-    .container { max-width: 480px; margin: 0 auto; padding: 15px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense App</title>
 
-    /* Top Cards */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .card { background: #fff; padding: 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.04); border-left: 5px solid var(--dark); }
-    .card h4 { margin: 0 0 5px; font-size: 11px; color: #888; text-transform: uppercase; }
-    .card p { margin: 0; font-size: 22px; font-weight: 800; color: #2d3436; }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    /* Category Section - FIXED CARDS */
-    .sec-title { font-weight: 800; margin: 25px 0 10px; font-size: 15px; color: #444; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .cat-box { 
-      background: #fff; padding: 12px 5px; border-radius: 12px; text-align: center; 
-      border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-    }
-    .cat-box h5 { margin: 0; font-size: 10px; color: #aaa; text-transform: uppercase; }
-    .cat-box p { margin: 4px 0 0; font-size: 14px; font-weight: 700; color: #333; }
+<style>
+*{box-sizing:border-box;font-family:Poppins}
+body{
+  background:#f4f6fb;
+  padding:15px;
+  max-width:450px;
+  margin:auto;
+}
 
-    /* Lists */
-    .list-box { background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 15px; }
-    .row { display: flex; justify-content: space-between; padding: 14px 15px; border-bottom: 1px solid #f5f5f5; font-size: 14px; font-weight: 600; }
-    .row:last-child { border-bottom: none; }
-    .pos { color: var(--green); }
-    .neg { color: var(--red); }
-  </style>
+/* डैशबोर्ड कार्ड्स के लिए ग्रिड */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mini-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border-left: 5px solid #7b2ff7; /* डेकोरेटिव बॉर्डर */
+}
+
+.mini-card h4 { margin: 0; font-size: 12px; color: #666; text-transform: uppercase; }
+.mini-card p { margin: 5px 0 0; font-size: 18px; font-weight: 600; color: #333; }
+
+/* फॉर्म कार्ड */
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+  animation:fadeIn .6s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+h2{text-align:center;margin-top:0; color: #333;}
+
+input,select{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  outline: none;
+}
+
+button{
+  position:relative;
+  overflow:hidden;
+  width:100%;
+  padding:14px;
+  background:linear-gradient(135deg,#7b2ff7,#f107a3);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  cursor:pointer;
+  font-weight: 600;
+}
+
+button span{
+  position:absolute;
+  border-radius:50%;
+  transform:scale(0);
+  animation:ripple .6s linear;
+  background:rgba(255,255,255,.6);
+}
+
+@keyframes ripple{
+  to{transform:scale(4);opacity:0}
+}
+
+#msg{text-align:center;margin-top:15px; font-weight: 600; color: #2ecc71;}
+</style>
 </head>
+
 <body>
 
-<div class="container">
-  
-  <div class="grid-2">
-    <div class="card" style="border-color:#f1c40f"><h4>Today</h4><p id="topToday">₹0</p></div>
-    <div class="card" style="border-color:#e91e63"><h4>Month</h4><p id="topMonth">₹0</p></div>
-    <div class="card" style="border-color:#2ecc71"><h4>Funds</h4><p id="topFund">₹0</p></div>
-    <div class="card" style="border-color:#3498db" onclick="fetchData()"><h4>Status</h4><p id="status" style="font-size:14px">Refresh 🔄</p></div>
+<div class="dashboard-grid">
+  <div class="mini-card" style="border-left-color: #ff9f43;">
+    <h4>Today</h4>
+    <p id="today-total">₹0</p>
   </div>
-
-  <div class="sec-title">🏷️ Category Summary</div>
-  <div class="grid-3">
-    <div class="cat-box"><h5>Manjeet</h5><p id="val-manjeet">₹0</p></div>
-    <div class="cat-box"><h5>Food</h5><p id="val-food">₹0</p></div>
-    <div class="cat-box"><h5>Other</h5><p id="val-other">₹0</p></div>
-    <div class="cat-box"><h5>Health</h5><p id="val-health">₹0</p></div>
-    <div class="cat-box"><h5>Travel</h5><p id="val-travel">₹0</p></div>
-    <div class="cat-box"><h5>Shopping</h5><p id="val-shopping">₹0</p></div>
+  <div class="mini-card" style="border-left-color: #ee5253;">
+    <h4>Month</h4>
+    <p id="month-total">₹0</p>
   </div>
-
-  <div style="display:flex; justify-content:space-between; margin:20px 0 10px; font-weight:800;">
-    <span>🏦 Bank Accounts</span><span id="bankTotal" class="pos">₹0</span>
+  <div class="mini-card" style="border-left-color: #10ac84;">
+    <h4>Bank</h4>
+    <p id="bank-total">₹0</p>
   </div>
-  <div class="list-box" id="bankList"></div>
-
-  <div style="display:flex; justify-content:space-between; margin:20px 0 10px; font-weight:800;">
-    <span>💳 Credit Cards</span><span id="cardTotal" class="neg">₹0</span>
+  <div class="mini-card" style="border-left-color: #2e86de;">
+    <h4>Credit Card</h4>
+    <p id="cc-total">₹0</p>
   </div>
-  <div class="list-box" id="cardList"></div>
+</div>
 
+<div class="card">
+  <h2>Add Expense</h2>
+
+  <select id="type">
+    <option value="Cash">Cash</option>
+    <option value="Bank">Bank</option>
+    <option value="Credit Card">Credit Card</option>
+  </select>
+
+  <input type="number" id="amount" placeholder="Amount ₹" step="0.01">
+  <input type="text" id="note" placeholder="Note (optional)">
+
+  <button onclick="saveExpense(event)">Save Expense</button>
+
+  <div id="msg"></div>
 </div>
 
 <script>
-  // ********** अपना नया DEPLOYMENT URL यहाँ डालें **********
-  const API_URL = "https://script.google.com/macros/s/AKfycbwXkJo6belMLPwHAEQLoA9VD1MNCArzuddtcqYRQSFsvTeuo0tjP8Ilut5ZU0Yf4HtA/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbyUxy4omEAx6jP5dVGPUrM3-rqEHE7cznUhFHocuhEb61jKnWAXzQ6VRO5vl6YkeT9R/exec";
 
-  function fetchData() {
-    document.getElementById("status").innerText = "Loading...";
+// लंबी संख्या को फिक्स करने के लिए हेल्पर फंक्शन
+function formatCurrency(num) {
+  return "₹" + parseFloat(num).toLocaleString('en-IN', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2
+  });
+}
+
+function saveExpense(e){
+  if(!amount.value) { alert("Please enter amount"); return; }
+  
+  ripple(e);
+  msg.innerText = "Saving...";
+
+  const data={
+    type:type.value,
+    amount:amount.value,
+    note:note.value
+  };
+
+  fetch(API_URL,{
+    method:"POST",
+    mode: 'no-cors', // Google Apps Script के लिए अक्सर इसकी जरूरत होती है
+    body:JSON.stringify(data)
+  })
+  .then(() => {
+    msg.innerText="Saved Successfully ✅";
     
-    fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) })
-      .then(r => r.json())
-      .then(res => {
-        if(res.ok) {
-          updateUI(res);
-          document.getElementById("status").innerText = "Active ✅";
-        } else {
-          document.getElementById("status").innerText = "Error ❌";
-        }
-      })
-      .catch(e => {
-        document.getElementById("status").innerText = "Fail ⚠️";
-        console.log(e);
-      });
-  }
+    // UI अपडेट (डेमो के लिए)
+    // असल में ये डेटा आपके डेटाबेस से फेच होना चाहिए
+    amount.value="";
+    note.value="";
+    setTimeout(()=> { msg.innerText=""; }, 3000);
+  })
+  .catch(err => {
+    msg.innerText="Error Saving ❌";
+    console.error(err);
+  });
+}
 
-  function updateUI(db) {
-    // 1. Top Cards
-    document.getElementById("topToday").innerText = "₹" + Math.round(db.summary.today);
-    document.getElementById("topMonth").innerText = "₹" + Math.round(db.summary.month);
-    document.getElementById("topFund").innerText = "₹" + Math.round(db.summary.funds);
-
-    // 2. Categories (Update by ID)
-    // यह कोड सिर्फ नंबर अपडेट करेगा, कार्ड्स को छेड़ेगा नहीं
-    const cats = db.summary.catTotals;
-    if(cats) {
-      updateCat("val-manjeet", cats.manjeet);
-      updateCat("val-food", cats.food);
-      updateCat("val-other", cats.other);
-      updateCat("val-health", cats.health);
-      updateCat("val-travel", cats.travel);
-      updateCat("val-shopping", cats.shopping);
-    }
-
-    // 3. Banks (Math Fix included)
-    let bTot = 0;
-    document.getElementById("bankList").innerHTML = db.banks.map(b => {
-      let v = Number(b.val);
-      bTot += v;
-      return `<div class="row"><span>${b.name}</span><span class="pos">₹${v.toFixed(2)}</span></div>`;
-    }).join("");
-    document.getElementById("bankTotal").innerText = "₹" + bTot.toFixed(2);
-
-    // 4. Cards
-    let cTot = 0;
-    document.getElementById("cardList").innerHTML = db.cards.map(c => {
-      let v = Number(c.val);
-      cTot += v;
-      return `<div class="row"><span>${c.name}</span><span class="neg">₹${v.toFixed(2)}</span></div>`;
-    }).join("");
-    document.getElementById("cardTotal").innerText = "₹" + cTot.toFixed(2);
-  }
-
-  function updateCat(id, val) {
-    const el = document.getElementById(id);
-    if(el) el.innerText = "₹" + Math.round(Number(val || 0));
-  }
-
-  window.onload = fetchData;
+function ripple(e){
+  const btn=e.currentTarget;
+  const circle=document.createElement("span");
+  const size=Math.max(btn.clientWidth,btn.clientHeight);
+  circle.style.width=circle.style.height=size+"px";
+  circle.style.left=e.offsetX-size/2+"px";
+  circle.style.top=e.offsetY-size/2+"px";
+  btn.appendChild(circle);
+  setTimeout(()=>circle.remove(),600);
+}
 </script>
 
 </body>
