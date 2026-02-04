@@ -3,32 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Expense Seva Pro</title>
+  <title>Expense Seva Fixed</title>
   <style>
     :root { --primary: #111; --bg: #f4f6f9; --success: #27ae60; --danger: #e74c3c; }
     * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { margin: 0; background: var(--bg); padding-bottom: 30px; }
+    body { margin: 0; background: var(--bg); padding-bottom: 40px; }
     .container { max-width: 500px; margin: 0 auto; padding: 15px; }
 
-    /* ऊपर के 4 मुख्य कार्ड्स */
+    /* ऊपर के 4 बड़े कार्ड्स */
     .top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .card-main { background: #fff; padding: 15px; border-radius: 18px; border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
     .card-main h4 { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; }
     .card-main p { margin: 8px 0 0; font-size: 20px; font-weight: 800; }
 
-    /* कैटेगरी ग्रिड - अब यह फिक्स है */
-    .section-title { font-weight: 800; margin: 20px 0 10px; font-size: 15px; }
+    /* कैटेगरी कार्ड्स - 3 कॉलम ग्रिड (ऊपर वाले कार्ड्स जैसा स्टाइल) */
+    .section-title { font-weight: 800; margin: 20px 0 10px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
     .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    .cat-card-fixed { background: #fff; padding: 12px 5px; border-radius: 15px; text-align: center; border: 1px solid #eee; }
-    .cat-card-fixed h5 { margin: 0; font-size: 10px; color: #888; text-transform: uppercase; white-space: nowrap; overflow: hidden; }
-    .cat-card-fixed p { margin: 5px 0 0; font-size: 14px; font-weight: 700; color: #111; }
+    .cat-item { 
+      background: #fff; 
+      padding: 12px 5px; 
+      border-radius: 14px; 
+      text-align: center; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      border-bottom: 3px solid #eee; /* बॉटम लाइन स्टाइल */
+    }
+    .cat-item h5 { margin: 0; font-size: 10px; color: #888; text-transform: uppercase; }
+    .cat-item p { margin: 5px 0 0; font-size: 14px; font-weight: 700; color: #111; }
 
-    /* बैंक और कार्ड लिस्ट */
-    .white-box { background: #fff; border-radius: 20px; padding: 10px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    .row-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f2f2f2; }
-    .row-item:last-child { border-bottom: none; }
+    /* बैंक और कार्ड की लिस्ट */
+    .white-box { background: #fff; border-radius: 20px; padding: 5px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f2f2f2; }
+    .row:last-child { border-bottom: none; }
     .val-pos { color: var(--success); font-weight: 800; }
     .val-neg { color: var(--danger); font-weight: 800; }
+    .total-row { display: flex; justify-content: space-between; font-weight: 800; padding: 10px 5px; }
   </style>
 </head>
 <body>
@@ -38,22 +46,16 @@
     <div class="card-main" style="border-color:#ff9800"><h4>Today</h4><p id="sumToday">₹0</p></div>
     <div class="card-main" style="border-color:#e91e63"><h4>Month</h4><p id="sumMonth">₹0</p></div>
     <div class="card-main" style="border-color:#4caf50"><h4>Funds</h4><p id="sumFund">₹0</p></div>
-    <div class="card-main" style="border-color:#2196f3" onclick="refreshData()"><h4>Sync</h4><p style="font-size:14px">Refresh 🔄</p></div>
+    <div class="card-main" style="border-color:#2196f3" onclick="refreshData()"><h4>Status</h4><p id="syncText" style="font-size:13px">Refresh 🔄</p></div>
   </div>
 
   <div class="section-title">🏷️ Category Summary</div>
-  
-  <div class="cat-grid" id="categoryGrid">
-    </div>
+  <div class="cat-grid" id="catGrid"></div>
 
-  <div style="display:flex; justify-content:space-between; font-weight:800; padding:10px 0;">
-    <span>🏦 Bank Accounts</span><span id="bankSubtotal" class="val-pos">₹0</span>
-  </div>
+  <div class="total-row"><span>🏦 Bank Accounts</span><span id="bankSubtotal" class="val-pos">₹0</span></div>
   <div class="white-box" id="bankList"></div>
 
-  <div style="display:flex; justify-content:space-between; font-weight:800; padding:10px 0;">
-    <span>💳 Credit Cards</span><span id="cardSubtotal" class="val-neg">₹0</span>
-  </div>
+  <div class="total-row"><span>💳 Credit Cards</span><span id="cardSubtotal" class="val-neg">₹0</span></div>
   <div class="white-box" id="cardList"></div>
 </div>
 
@@ -62,54 +64,56 @@
   const API_URL = "YOUR_SCRIPT_URL_HERE"; 
 
   async function refreshData() {
+    document.getElementById("syncText").innerText = "Syncing...";
     try {
       const response = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) });
       const res = await response.json();
       if(res.ok) { 
-        updateUI(res);
+        renderData(res);
+        document.getElementById("syncText").innerText = "Success ✅";
       }
-    } catch(e) { console.log("Sync Error"); }
+    } catch(e) { document.getElementById("syncText").innerText = "Failed ❌"; }
   }
 
-  function updateUI(db) {
+  function renderData(db) {
     const s = db.summary;
 
-    // 1. टॉप कार्ड्स अपडेट
+    // 1. मुख्य कार्ड्स
     document.getElementById("sumToday").innerText = "₹" + s.todayExp;
     document.getElementById("sumMonth").innerText = "₹" + s.monthExp;
     document.getElementById("sumFund").innerText = "₹" + s.monthFund;
 
-    // 2. कैटेगरी कार्ड्स (Math.round का इस्तेमाल ताकि .000001 न आए)
+    // 2. कैटेगरी कार्ड्स (फिक्स ग्रिड लॉजिक)
     let catHTML = "";
     db.categories.forEach(name => {
-      let amt = Math.round(Number(s.catTotals[name] || 0));
+      let val = Math.round(Number(s.catTotals[name] || 0));
       catHTML += `
-        <div class="cat-card-fixed">
+        <div class="cat-item">
           <h5>${name}</h5>
-          <p>₹${amt}</p>
+          <p>₹${val}</p>
         </div>`;
     });
-    document.getElementById("categoryGrid").innerHTML = catHTML;
+    document.getElementById("catGrid").innerHTML = catHTML;
 
-    // 3. बैंक लिस्ट और शुद्ध जोड़ (Concatenation Fix)
-    let bTotal = 0;
+    // 3. बैंक लिस्ट (गणित फिक्स)
+    let bSum = 0;
     let bHTML = db.banks.map(b => {
-      let val = Number(b.balance);
-      bTotal += val;
-      return `<div class="row-item"><span>${b.name}</span><span class="val-pos">₹${val.toFixed(2)}</span></div>`;
+      let amt = Number(b.balance);
+      bSum += amt;
+      return `<div class="row"><span>${b.name}</span><span class="val-pos">₹${amt.toFixed(2)}</span></div>`;
     }).join("");
     document.getElementById("bankList").innerHTML = bHTML;
-    document.getElementById("bankSubtotal").innerText = "₹" + bTotal.toFixed(2);
+    document.getElementById("bankSubtotal").innerText = "₹" + bSum.toFixed(2);
 
     // 4. कार्ड लिस्ट
-    let cTotal = 0;
+    let cSum = 0;
     let cHTML = db.cards.map(c => {
-      let val = Number(c.due);
-      cTotal += val;
-      return `<div class="row-item"><span>${c.name}</span><span class="val-neg">₹${val.toFixed(2)}</span></div>`;
+      let due = Number(c.due);
+      cSum += due;
+      return `<div class="row"><span>${c.name}</span><span class="val-neg">₹${due.toFixed(2)}</span></div>`;
     }).join("");
     document.getElementById("cardList").innerHTML = cHTML;
-    document.getElementById("cardSubtotal").innerText = "₹" + cTotal.toFixed(2);
+    document.getElementById("cardSubtotal").innerText = "₹" + cSum.toFixed(2);
   }
 
   window.onload = refreshData;
