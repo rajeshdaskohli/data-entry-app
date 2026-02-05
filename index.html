@@ -1,128 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expense App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#111">
+  <title>Smart Expense Manager</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
+    body { margin: 0; background: #f0f2f5; color: #1a1a1a; padding-bottom: 20px; }
+    .topbar { background: #111; color: #fff; padding: 15px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 1000; }
+    .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+    .page { display: none; } .page.active { display: block; }
+    
+    /* Grid for 3 Cards */
+    .summary-grid, .cat-grid { display: grid; gap: 10px; margin-bottom: 20px; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .cat-grid { grid-template-columns: repeat(3, 1fr); }
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    .sum-card, .cat-box { background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid #111; }
+    .sum-card h4, .cat-box h5 { margin: 0; font-size: 10px; color: #666; text-transform: uppercase; }
+    .sum-card p, .cat-box p { margin: 5px 0 0; font-size: 14px; font-weight: 800; }
+    
+    /* Dynamic Colors */
+    .c1 { border-left-color: #ff9800; } .c2 { border-left-color: #e91e63; }
+    .c3 { border-left-color: #4caf50; } .c4 { border-left-color: #2196f3; }
+    .c5 { border-left-color: #9c27b0; } .c6 { border-left-color: #00bcd4; }
 
-<style>
-*{box-sizing:border-box;font-family:Poppins}
-body{
-  background:#f4f6fb;
-  padding:20px;
-  max-width:420px;
-  margin:auto;
-}
-
-.card{
-  background:#fff;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-  animation:fadeIn .6s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-h2{text-align:center;margin-bottom:20px}
-
-input,select{
-  width:100%;
-  padding:12px;
-  margin-bottom:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-
-button{
-  position:relative;
-  overflow:hidden;
-  width:100%;
-  padding:14px;
-  background:linear-gradient(135deg,#7b2ff7,#f107a3);
-  color:#fff;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-  cursor:pointer;
-}
-
-button span{
-  position:absolute;
-  border-radius:50%;
-  transform:scale(0);
-  animation:ripple .6s linear;
-  background:rgba(255,255,255,.6);
-}
-
-@keyframes ripple{
-  to{transform:scale(4);opacity:0}
-}
-
-#msg{text-align:center;margin-top:10px}
-</style>
+    .box { background: #fff; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .box-title { font-size: 15px; font-weight: 800; margin: 15px 0 8px 0; display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 6px; }
+    .statRow { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+    
+    .inp { width: 100%; height: 48px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 12px; padding: 0 15px; margin-bottom: 15px; font-size: 16px; outline: none; }
+    .btn { width: 100%; height: 50px; background: #111; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; }
+    .card-btn { background: #fff; border-radius: 15px; padding: 18px; text-align: center; border: 1px solid #ddd; cursor: pointer; margin-bottom: 10px; font-weight: 700; }
+    .val-pos { color: #2e7d32; } .val-neg { color: #c62828; }
+    .status-tag { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+    .tag-paid { background: #e8f5e9; color: #2e7d32; } .tag-unpaid { background: #ffebee; color: #c62828; }
+  </style>
 </head>
-
 <body>
 
-<div class="card">
-  <h2>Expense App</h2>
+  <div class="topbar">
+    <button style="background:none; border:none; color:#fff; font-size:20px;" onclick="showPage('home')">☰</button>
+    <div><b id="pageTitle">DASHBOARD</b><br><small>EXPENSE SEVA</small></div>
+  </div>
 
-  <select id="type">
-    <option>Cash</option>
-    <option>Bank</option>
-    <option>Credit Card</option>
-  </select>
+  <div class="container">
+    <div class="page active" id="pageHome">
+      <div class="card-btn" style="padding:40px" onclick="showPage('sm')">💰 Open Expense Seva</div>
+    </div>
 
-  <input type="number" id="amount" placeholder="Amount ₹">
-  <input type="text" id="note" placeholder="Note (optional)">
+    <div class="page" id="pageSm">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="card-btn" onclick="showPage('dashboard')">📊 Dashboard</div>
+        <div class="card-btn" onclick="showPage('entry')">✍️ Entry</div>
+        <div class="card-btn" onclick="showPage('addfund')">🏦 Add Funds</div>
+        <div class="card-btn" onclick="showPage('payments')">💳 Bills/EMI</div>
+      </div>
+    </div>
 
-  <button onclick="saveExpense(event)">Save Expense</button>
+    <div class="page" id="pageDashboard">
+      <div class="summary-grid">
+        <div class="sum-card c1"><h4>Today</h4><p id="sumToday">₹0</p></div>
+        <div class="sum-card c2"><h4>Month</h4><p id="sumMonth">₹0</p></div>
+        <div class="sum-card c3"><h4>Funds</h4><p id="sumFund">₹0</p></div>
+        <div class="sum-card c4" onclick="showPage('addfund')"><h4>Action</h4><p style="font-size:12px">Deposit 🏦</p></div>
+      </div>
 
-  <div id="msg"></div>
-</div>
+      <div class="box-title">🏷️ Category Summary</div>
+      <div class="cat-grid" id="catSummaryGrid"></div>
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyUxy4omEAx6jP5dVGPUrM3-rqEHE7cznUhFHocuhEb61jKnWAXzQ6VRO5vl6YkeT9R/exec";
+      <div class="box-title"><span>🏦 Banks</span><span id="bankSubtotal" class="val-pos">₹0</span></div>
+      <div class="box" id="bankList"></div>
 
-function saveExpense(e){
-  ripple(e);
+      <div class="box-title"><span>💳 Cards</span><span id="cardSubtotal" class="val-neg">₹0</span></div>
+      <div class="box" id="cardList"></div>
 
-  const data={
-    type:type.value,
-    amount:amount.value,
-    note:note.value
-  };
+      <div class="box-title">📉 Loans</div>
+      <div class="box" id="loanList"></div>
 
-  fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify(data)
-  })
-  .then(r=>r.text())
-  .then(res=>{
-    msg.innerText="Saved Successfully ✅";
-    amount.value="";
-    note.value="";
-  });
-}
+      <div class="box-title">🕒 Recent Activity</div>
+      <div class="box" id="historyList"></div>
+    </div>
 
-function ripple(e){
-  const btn=e.currentTarget;
-  const circle=document.createElement("span");
-  const size=Math.max(btn.clientWidth,btn.clientHeight);
-  circle.style.width=circle.style.height=size+"px";
-  circle.style.left=e.offsetX-size/2+"px";
-  circle.style.top=e.offsetY-size/2+"px";
-  btn.appendChild(circle);
-  setTimeout(()=>circle.remove(),600);
-}
-</script>
+    <div class="page" id="pageEntry">
+      <div class="box">
+        <select class="inp" id="payMode" onchange="toggleFields()"></select>
+        <div id="divBank" style="display:none;"><select class="inp" id="expBank"></select></div>
+        <div id="divCard" style="display:none;"><select class="inp" id="expCard"></select></div>
+        <select class="inp" id="expCategory"></select>
+        <input type="number" class="inp" id="expAmount" placeholder="Amount 0.00">
+        <button class="btn" onclick="saveTrans('entry')">Submit</button>
+      </div>
+    </div>
 
+    <div class="page" id="pageAddfund">
+      <div class="box">
+        <select class="inp" id="targetBank"></select>
+        <input type="number" class="inp" id="fundAmount" placeholder="Amount">
+        <button class="btn" onclick="saveTrans('fund')">Deposit</button>
+      </div>
+    </div>
+
+    <div class="page" id="pagePayments">
+      <div class="box">
+        <select class="inp" id="payFrom"></select>
+        <select class="inp" id="payTo"></select>
+        <input type="number" class="inp" id="payAmt" placeholder="Amount">
+        <button class="btn" onclick="saveTrans('pay')">Pay Bill</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxXOXRN5erzcQFcTEoxrIYF6gAIlve-WrytbTnKbMrWDO24nNdqOR-UNbcZD1KxbO5C7A/exec"; 
+    let db = null;
+    const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(n) || 0);
+
+    async function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1))?.classList.add('active');
+      document.getElementById("pageTitle").innerText = name.toUpperCase();
+      if(name !== 'home') await refreshData();
+    }
+
+    async function refreshData() {
+      const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
+      if(res.ok) { db = res; updateUI(); }
+    }
+
+    function updateUI() {
+      const s = db.summary;
+      document.getElementById("sumToday").innerText = fmt(s.todayExp);
+      document.getElementById("sumMonth").innerText = fmt(s.monthExp);
+      document.getElementById("sumFund").innerText = fmt(s.monthFund);
+
+      const colors = ['c1','c2','c3','c4','c5','c6'];
+      document.getElementById("catSummaryGrid").innerHTML = Object.entries(s.catTotals).map(([cat, val], i) => `
+        <div class="cat-box ${colors[i%6]}"><h5>${cat}</h5><p>${fmt(val)}</p></div>`).join("");
+
+      let bSum = 0;
+      document.getElementById("bankList").innerHTML = db.banks.map(b => { bSum += b.val; return `<div class="statRow"><span>${b.name}</span><b class="val-pos">${fmt(b.val)}</b></div>` }).join("");
+      document.getElementById("bankSubtotal").innerText = fmt(bSum);
+
+      let cSum = 0;
+      document.getElementById("cardList").innerHTML = db.cards.map(c => { cSum += c.val; return `<div class="statRow"><span>${c.name}</span><b class="val-neg">${fmt(c.val)}</b></div>` }).join("");
+      document.getElementById("cardSubtotal").innerText = fmt(cSum);
+
+      document.getElementById("loanList").innerHTML = db.loans.map(l => `
+        <div class="statRow"><div><b>${l.name}</b><br><small>${fmt(l.emi)}</small></div>
+        <span class="status-tag ${l.status.toLowerCase()==='paid'?'tag-paid':'tag-unpaid'}">${l.status}</span></div>`).join("");
+
+      document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `
+        <div class="statRow"><div><b>${t.name}</b><br><small>${t.date} • ${t.category}</small></div>
+        <b class="${t.type==='Add Fund'?'val-pos':'val-neg'}">${fmt(t.amount)}</b></div>`).join("");
+
+      fillDropdowns();
+    }
+
+    function fillDropdowns() {
+      const sel = `<option value="" disabled selected>Select...</option>`;
+      const bH = sel + db.banks.map(b => `<option value="${b.name}">${b.name}</option>`).join("");
+      const cH = sel + db.cards.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+      document.getElementById("expBank").innerHTML = bH;
+      document.getElementById("targetBank").innerHTML = bH;
+      document.getElementById("payFrom").innerHTML = bH;
+      document.getElementById("expCard").innerHTML = cH;
+      document.getElementById("payTo").innerHTML = cH + db.loans.map(l => `<option value="${l.name}">${l.name}</option>`).join("");
+      document.getElementById("expCategory").innerHTML = sel + db.categories.map(c => `<option value="${c}">${c}</option>`).join("");
+      document.getElementById("payMode").innerHTML = `${sel}<option value="cash">Cash</option><option value="bank">Bank</option><option value="card">Card</option>`;
+    }
+
+    async function saveTrans(type) {
+      let p = { action: "save" };
+      if(type==='entry') {
+        let m = document.getElementById("payMode").value;
+        p.type = m; p.name = (m==='cash')?'Cash':(m==='bank')?document.getElementById("expBank").value:document.getElementById("expCard").value;
+        p.amount = document.getElementById("expAmount").value; p.category = document.getElementById("expCategory").value;
+      } else if(type==='fund') {
+        p.type="Add Fund"; p.name=document.getElementById("targetBank").value; p.amount=document.getElementById("fundAmount").value;
+      } else if(type==='pay') {
+        p.type="Bill Pay"; p.name=document.getElementById("payTo").value; p.amount=document.getElementById("payAmt").value; p.remark="Paid from "+document.getElementById("payFrom").value;
+      }
+      if(!p.amount || !p.name) return alert("Fill all fields");
+      const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(p) }).then(r=>r.json());
+      if(res.ok) { alert("Saved ✅"); showPage("dashboard"); }
+    }
+
+    function toggleFields() {
+      const m = document.getElementById("payMode").value;
+      document.getElementById("divBank").style.display = (m==='bank') ? 'block' : 'none';
+      document.getElementById("divCard").style.display = (m==='card') ? 'block' : 'none';
+    }
+  </script>
 </body>
 </html>
