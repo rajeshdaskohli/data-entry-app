@@ -475,11 +475,11 @@
       document.getElementById('modal').style.display = 'flex';
       setTimeout(() => document.getElementById('mBox').classList.add('show'), 10);
     }
-    function closeModal() { document.getElementById('mBox').classList.remove('show'); setTimeout(() => document.getElementById('modal').style.display = 'none', 300); }
-    function toggleTheme() {
-      let h = document.documentElement; let isD = h.getAttribute('data-theme') === 'dark';
-      h.setAttribute('data-theme', isD ? 'light' : 'dark');
-      document.getElementById('tBtn').innerText = isD ? 'dark_mode' : 'light_mode';
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    function toggleFields() {
+      let m = document.getElementById("payMode").value;
+      document.getElementById("divBank").style.display = (m==='bank') ? 'block' : 'none';
+      document.getElementById("divCard").style.display = (m==='card') ? 'block' : 'none';
     }
     
     // Fix 1: Entry Tab Hide Card Option Logic
