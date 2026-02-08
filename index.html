@@ -4,11 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <link rel="apple-touch-icon" href="https://i.ibb.co/6R0pT8q/449167.png">
-  <link rel="icon" href="https://i.ibb.co/6R0pT8q/449167.png">
-  
+  <link rel="apple-touch-icon" href="https://i.ibb.co/v408GZJ/420535.png">
   <title>Expense Seva Pro</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -27,23 +23,14 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.2s ease; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; padding-bottom: 100px; }
 
-    /* Header & Menu */
-    .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg); z-index: 100; border-bottom: 1px solid var(--border); }
-    .header h1 { font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; }
-    .controls { display: flex; align-items: center; position: relative; }
-    .controls i { cursor: pointer; margin-left: 15px; color: var(--text-dim); }
-    
-    /* Rotation Fix for Sync Icon */
-    #sBtn { transform: scaleX(-1); } /* Arrow right side face logic */
-    @keyframes spin { from { transform: rotate(0deg) scaleX(-1); } to { transform: rotate(360deg) scaleX(-1); } }
+    .btn-main:active { transform: scale(0.96); opacity: 0.9; }
+    .loading-btn { pointer-events: none; opacity: 0.6; filter: grayscale(1); }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .spinning { animation: spin 1s linear infinite; color: var(--primary) !important; }
 
-    /* Settings Dropdown */
-    .menu-dropdown { display: none; position: absolute; top: 40px; right: 0; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 150px; z-index: 200; }
-    .menu-dropdown.show { display: block; }
-    .menu-item { display: flex; align-items: center; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 10px; }
-    .menu-item:hover { background: var(--border); }
-    .menu-item i { margin-right: 10px; font-size: 18px; margin-left: 0 !important; }
+    .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg); z-index: 100; border-bottom: 1px solid var(--border); }
+    .header h1 { font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
+    .controls i { cursor: pointer; margin-left: 15px; color: var(--text-dim); }
 
     .container { max-width: 500px; margin: 0 auto; padding: 0 16px; }
     .page { display: none; min-height: 70vh; animation: fadeIn 0.4s ease; }
@@ -110,25 +97,15 @@
   </div>
 
   <div class="header">
-    <h1 id="headerTitle">EXPENSE SEVA PRO</h1>
+    <h1>EXPENSE SEVA PRO</h1>
     <div class="controls">
+      <i class="material-icons-round" onclick="toggleTheme()" id="tBtn">light_mode</i>
       <i class="material-icons-round" onclick="refreshData()" id="sBtn">sync</i>
-      <i class="material-icons-round" onclick="toggleMenu()">more_vert</i>
-      
-      <div class="menu-dropdown" id="settingsMenu">
-        <div class="menu-item" onclick="toggleTheme()">
-          <i class="material-icons-round" id="themeIcon">light_mode</i>
-          <span id="themeText">Light Mode</span>
-        </div>
-        <div class="menu-item" onclick="refreshData()">
-          <i class="material-icons-round">refresh</i>
-          <span>Force Sync</span>
-        </div>
-      </div>
     </div>
   </div>
 
-  <div class="container">
+  <div class="container" id="swipeArea">
+    
     <div class="page active" id="pageDashboard">
       <div class="hero-scroll">
         <div class="hero-card"><span>Today Exp</span><p id="sumToday">₹0</p></div>
@@ -158,7 +135,7 @@
       </div>
       <div class="list-container" id="loanList"></div>
 
-      <div class="label-row"><h3>RECENT ACTIVITY</h3></div>
+      <div class="label-row"><h3>RECENT ACTIVITY (1 MONTH)</h3></div>
       <div class="list-container">
          <div class="scroll-area" id="historyList"></div>
       </div>
@@ -169,7 +146,7 @@
         <div class="inp-group">
           <label>Payment Method</label>
           <select class="inp" id="payMode" onchange="toggleFields()">
-            <option value="Digital Wallet">👛 Wallet</option>
+            <option value="Digital Wallet">👛 Digital Wallet</option>
             <option value="bank">🏦 Bank Transfer</option>
             <option value="card">💳 Credit Card</option>
           </select>
@@ -198,7 +175,7 @@
         <div class="inp-group">
           <label>Deposit To (Destination)</label>
           <select class="inp" id="targetType" onchange="updateFundSources()">
-            <option value="Wallet">👛 Wallet</option>
+            <option value="Wallet">👛 Digital Wallet</option>
             <option value="Bank">🏦 Bank Account</option>
           </select>
         </div>
@@ -245,9 +222,9 @@
 
   <div class="nav-wrapper">
     <div class="nav-bar">
-      <div class="nav-item active" onclick="showPage(0)"><i class="material-icons-round">home</i><span>Home</span></div>
-      <div class="nav-item" onclick="showPage(1)"><i class="material-icons-round">add_shopping_cart</i><span>Entry</span></div>
-      <div class="nav-item" onclick="showPage(2)"><i class="material-icons-round">swap_horiz</i><span>Transfer</span></div>
+      <div class="nav-item active" onclick="showPage(0)"><i class="material-icons-round">grid_view</i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage(1)"><i class="material-icons-round">add_circle</i><span>Entry</span></div>
+      <div class="nav-item" onclick="showPage(2)"><i class="material-icons-round">sync_alt</i><span>Transfer</span></div>
       <div class="nav-item" onclick="showPage(3)"><i class="material-icons-round">receipt_long</i><span>Bills</span></div>
     </div>
   </div>
@@ -258,38 +235,11 @@
     let curPage = 0;
     const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(n) || 0);
 
-    // Initialize Theme & Persistence
-    window.onload = () => {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      updateThemeUI(savedTheme);
-      showPage(0);
-      registerSW();
-    };
-
-    function toggleMenu() { document.getElementById('settingsMenu').classList.toggle('show'); }
-    window.onclick = (e) => { if (!e.target.matches('.material-icons-round')) document.getElementById('settingsMenu').classList.remove('show'); };
-
-    function toggleTheme() {
-      let h = document.documentElement;
-      let newTheme = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      h.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      updateThemeUI(newTheme);
-    }
-
-    function updateThemeUI(theme) {
-      const icon = document.getElementById('themeIcon');
-      const text = document.getElementById('themeText');
-      icon.innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
-      text.innerText = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
-    }
+    setInterval(() => { if (curPage === 0) refreshData(); }, 30000);
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') refreshData(); });
 
     async function showPage(idx) {
       curPage = idx;
-      const titles = ["EXPENSE SEVA PRO", "ENTRY", "TRANSFER", "BILLS"];
-      document.getElementById('headerTitle').innerText = titles[idx];
-      
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById(['pageDashboard','pageEntry','pageFund','pageBills'][idx]).classList.add('active');
@@ -476,6 +426,11 @@
       setTimeout(() => document.getElementById('mBox').classList.add('show'), 10);
     }
     function closeModal() { document.getElementById('mBox').classList.remove('show'); setTimeout(() => document.getElementById('modal').style.display = 'none', 300); }
+    function toggleTheme() {
+      let h = document.documentElement; let isD = h.getAttribute('data-theme') === 'dark';
+      h.setAttribute('data-theme', isD ? 'light' : 'dark');
+      document.getElementById('tBtn').innerText = isD ? 'dark_mode' : 'light_mode';
+    }
     
     // Fix 1: Entry Tab Hide Card Option Logic
     function toggleFields() {
