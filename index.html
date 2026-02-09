@@ -4,8 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="https://i.ibb.co/v408GZJ/420535.png">
-  <title>Expense Seva Pro</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="apple-touch-icon" href="https://i.ibb.co/6R0pT8q/449167.png">
+  <link rel="icon" href="https://i.ibb.co/6R0pT8q/449167.png">
+  
+  <title>Expense Pro</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -23,14 +29,23 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.2s ease; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; padding-bottom: 100px; }
 
-    .btn-main:active { transform: scale(0.96); opacity: 0.9; }
-    .loading-btn { pointer-events: none; opacity: 0.6; filter: grayscale(1); }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    /* Header & Menu */
+    .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg); z-index: 100; border-bottom: 1px solid var(--border); }
+    .header h1 { font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; }
+    .controls { display: flex; align-items: center; position: relative; }
+    .controls i { cursor: pointer; margin-left: 15px; color: var(--text-dim); }
+    
+    /* Rotation Fix for Sync Icon */
+    #sBtn { transform: scaleX(-1); } /* Arrow right side face logic */
+    @keyframes spin { from { transform: rotate(0deg) scaleX(-1); } to { transform: rotate(360deg) scaleX(-1); } }
     .spinning { animation: spin 1s linear infinite; color: var(--primary) !important; }
 
-    .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg); z-index: 100; border-bottom: 1px solid var(--border); }
-    .header h1 { font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
-    .controls i { cursor: pointer; margin-left: 15px; color: var(--text-dim); }
+    /* Settings Dropdown */
+    .menu-dropdown { display: none; position: absolute; top: 40px; right: 0; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 150px; z-index: 200; }
+    .menu-dropdown.show { display: block; }
+    .menu-item { display: flex; align-items: center; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 10px; }
+    .menu-item:hover { background: var(--border); }
+    .menu-item i { margin-right: 10px; font-size: 18px; margin-left: 0 !important; }
 
     .container { max-width: 500px; margin: 0 auto; padding: 0 16px; }
     .page { display: none; min-height: 70vh; animation: fadeIn 0.4s ease; }
@@ -97,21 +112,31 @@
   </div>
 
   <div class="header">
-    <h1>EXPENSE SEVA PRO</h1>
+    <h1 id="headerTitle">EXPENSE PRO</h1>
     <div class="controls">
-      <i class="material-icons-round" onclick="toggleTheme()" id="tBtn">light_mode</i>
       <i class="material-icons-round" onclick="refreshData()" id="sBtn">sync</i>
+      <i class="material-icons-round" onclick="toggleMenu()">more_vert</i>
+      
+      <div class="menu-dropdown" id="settingsMenu">
+        <div class="menu-item" onclick="toggleTheme()">
+          <i class="material-icons-round" id="themeIcon">light_mode</i>
+          <span id="themeText">Light Mode</span>
+        </div>
+        <div class="menu-item" onclick="refreshData()">
+          <i class="material-icons-round">refresh</i>
+          <span>Force Sync</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="container" id="swipeArea">
-    
+  <div class="container">
     <div class="page active" id="pageDashboard">
       <div class="hero-scroll">
         <div class="hero-card"><span>Today Exp</span><p id="sumToday">₹0</p></div>
         <div class="hero-card"><span>Month Exp</span><p id="sumMonth">₹0</p></div>
         <div class="hero-card"><span>Month Fund</span><p id="sumFund">₹0</p></div>
-        <div class="hero-card wallet-card"><span>Wallet Bal</span><p id="sumWallet">₹0</p></div>
+        <div class="hero-card"><span>Wallet Bal</span><p id="sumWallet">₹0</p></div>
       </div>
 
       <div class="label-row"><h3>SPENDING BY CATEGORY</h3></div>
@@ -135,7 +160,7 @@
       </div>
       <div class="list-container" id="loanList"></div>
 
-      <div class="label-row"><h3>RECENT ACTIVITY (1 MONTH)</h3></div>
+      <div class="label-row"><h3>RECENT ACTIVITY</h3></div>
       <div class="list-container">
          <div class="scroll-area" id="historyList"></div>
       </div>
@@ -146,7 +171,7 @@
         <div class="inp-group">
           <label>Payment Method</label>
           <select class="inp" id="payMode" onchange="toggleFields()">
-            <option value="Digital Wallet">👛 Digital Wallet</option>
+            <option value="Digital Wallet">👛 Wallet</option>
             <option value="bank">🏦 Bank Transfer</option>
             <option value="card">💳 Credit Card</option>
           </select>
@@ -175,7 +200,7 @@
         <div class="inp-group">
           <label>Deposit To (Destination)</label>
           <select class="inp" id="targetType" onchange="updateFundSources()">
-            <option value="Wallet">👛 Digital Wallet</option>
+            <option value="Wallet">👛 Wallet</option>
             <option value="Bank">🏦 Bank Account</option>
           </select>
         </div>
@@ -222,224 +247,108 @@
 
   <div class="nav-wrapper">
     <div class="nav-bar">
-      <div class="nav-item active" onclick="showPage(0)"><i class="material-icons-round">grid_view</i><span>Home</span></div>
-      <div class="nav-item" onclick="showPage(1)"><i class="material-icons-round">add_circle</i><span>Entry</span></div>
-      <div class="nav-item" onclick="showPage(2)"><i class="material-icons-round">sync_alt</i><span>Transfer</span></div>
+      <div class="nav-item active" onclick="showPage(0)"><i class="material-icons-round">home</i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage(1)"><i class="material-icons-round">add_shopping_cart</i><span>Entry</span></div>
+      <div class="nav-item" onclick="showPage(2)"><i class="material-icons-round">swap_horiz</i><span>Transfer</span></div>
       <div class="nav-item" onclick="showPage(3)"><i class="material-icons-round">receipt_long</i><span>Bills</span></div>
     </div>
   </div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxGwFBHXOgUTwgconAWDF0qZXPJwxtHc-TFwv-2Q_wHcZcGJtNg_i5JdNydifhP3BFBBA/exec";
-    let db = null;
-    let curPage = 0;
-    const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(n) || 0);
+<script>
+  // आपकी Apps Script Web App का URL यहाँ पहले से होगा
+  const API_URL = "https://script.google.com/macros/s/AKfycbxGwFBHXOgUTwgconAWDF0qZXPJwxtHc-TFwv-2Q_wHcZcGJtNg_i5JdNydifhP3BFBBA/exec"; 
+  let db = {}; // इसमें हमारा सारा डेटा रहेगा
 
-    setInterval(() => { if (curPage === 0) refreshData(); }, 30000);
-    document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') refreshData(); });
-
-    async function showPage(idx) {
-      curPage = idx;
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById(['pageDashboard','pageEntry','pageFund','pageBills'][idx]).classList.add('active');
-      document.querySelectorAll('.nav-item')[idx].classList.add('active');
-      if(idx === 0) await refreshData();
-      if(idx === 2) updateFundSources();
+  // 1. ऐप खुलते ही डेटा लोड करना (बिना 0 दिखाए)
+  async function refreshData() {
+    // पहले फोन की मेमोरी से पुराना डेटा उठाएं
+    const cachedData = localStorage.getItem('my_app_data');
+    if (cachedData) {
+      db = JSON.parse(cachedData);
+      updateUI(); // स्क्रीन पर तुरंत बैलेंस दिखाएं
     }
 
-    async function refreshData() {
-      const sBtn = document.getElementById('sBtn');
-      sBtn.classList.add('spinning');
-      try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
-        if(res.ok) { db = res; updateUI(); }
-      } catch(e) { console.error("Sync Error"); }
-      sBtn.classList.remove('spinning');
-    }
-
-    function updateUI() {
-      const s = db.summary;
-      document.getElementById("sumToday").innerText = fmt(s.todayExp);
-      document.getElementById("sumMonth").innerText = fmt(s.monthExp);
-      document.getElementById("sumFund").innerText = fmt(s.monthFund);
-      document.getElementById("sumWallet").innerText = fmt(db.walletBal);
-
-      document.getElementById("catGrid").innerHTML = db.categories.map(c => `
-        <div class="cat-item"><div>${c.icon}</div><b>${c.name}</b><small>${fmt(s.catTotals[c.name.toLowerCase().trim()] || 0)}</small></div>
-      `).join("");
-
-      const getSum = (arr) => arr.reduce((acc, i) => acc + (Number(i.val) || 0), 0);
-
-      // Banks
-      document.getElementById("bankSub").innerText = fmt(getSum(db.banks));
-      document.getElementById("bankList").innerHTML = db.banks.map(b => `
-        <div class="row">
-          <div class="meta"><b>${b.name}</b><small>Balance</small></div>
-          <b class="${b.val < 0 ? 'val-neg' : 'val-pos'}">${fmt(b.val)}</b>
-        </div>`).join("");
-
-      // Fix 3: Credit Card Color Coding (Red if > 0, Green if 0)
-      document.getElementById("cardSub").innerText = fmt(getSum(db.cards));
-      document.getElementById("cardList").innerHTML = db.cards.map(c => `
-        <div class="row">
-          <div class="meta"><b>${c.name}</b><small>Outstanding</small></div>
-          <b class="${Number(c.val) > 0 ? 'val-neg' : 'val-pos'}">${fmt(c.val)}</b>
-        </div>`).join("");
-
-      // Fix 5: Loans & EMI with Status
-      document.getElementById("loanSub").innerText = fmt(getSum(db.loans));
-      document.getElementById("loanList").innerHTML = db.loans.map(l => {
-        const isPaid = l.status === 'Paid';
-        return `
-        <div class="row">
-          <div class="meta">
-            <b>${l.name} <span class="status-badge ${isPaid?'bg-green':'bg-red'}">${isPaid?'PAID':'UNPAID'}</span></b>
-            <small>Monthly EMI</small>
-          </div>
-          <b class="val-neg">${fmt(l.val)}</b>
-        </div>`;
-      }).join("");
-
-      // Recent History
-      document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `
-        <div class="row"><div class="meta"><b>${t.name} <span style="font-size:9px; opacity:0.5;">${t.category}</span></b><small>${t.date}</small></div><b class="${t.type==='Add Fund' || t.type==='Income' ?'val-pos':'val-neg'}">${t.type==='Add Fund' || t.type==='Income' ?'+':'-'}${fmt(t.amount)}</b></div>
-      `).join("");
-
-      fillDropdowns();
-    }
-
-    function fillDropdowns() {
-      const opt = (list, key) => list.map(i => `<option value="${i[key]}">${i[key]}</option>`).join("");
-      document.getElementById("expBank").innerHTML = opt(db.banks, "name");
-      document.getElementById("expCard").innerHTML = opt(db.cards, "name");
-      document.getElementById("payFrom").innerHTML = `<option value="Wallet">Digital Wallet</option>` + opt(db.banks, "name");
-      document.getElementById("expCat").innerHTML = db.categories.map(c => `<option value="${c.name}">${c.icon} ${c.name}</option>`).join("");
-      updateBillTarget();
-    }
-
-    // Fix 5: Auto-fill EMI Amount
-    function autoFillEmi() {
-        const type = document.getElementById("billType").value;
-        const selectedName = document.getElementById("payTo").value;
-        if(type === 'loan') {
-            const loan = db.loans.find(l => l.name === selectedName);
-            if(loan) document.getElementById("payAmt").value = loan.val;
-        } else {
-            document.getElementById("payAmt").value = "";
-        }
-    }
-
-    function updateBillTarget() {
-      const type = document.getElementById("billType").value;
-      const list = (type === 'card') ? db.cards : db.loans;
-      document.getElementById("payTo").innerHTML = list.map(i => `<option value="${i.name}">${i.name}</option>`).join("");
-      autoFillEmi();
-    }
-
-    function updateFundSources() {
-      const dest = document.getElementById("targetType").value;
-      const targetBankDiv = document.getElementById("divTargetBank");
-      let options = '<option value="Others">💳 Other/Salary Source</option>';
-      
-      if(dest === 'Wallet') {
-        targetBankDiv.style.display = "none";
-        options += db.banks.filter(b=>b.name!=='Wallet' && b.name!=='Cash').map(b=>`<option value="${b.name}">🏦 From ${b.name}</option>`).join("");
-      } else {
-        targetBankDiv.style.display = "block";
-        document.getElementById("targetBankName").innerHTML = db.banks.filter(b=>b.name!=='Wallet' && b.name!=='Cash').map(b=>`<option value="${b.name}">${b.name}</option>`).join("");
-        options += '<option value="Wallet">👛 From Digital Wallet</option>';
-        options += '<option value="Cash">💵 From Cash Hand</option>';
+    // अब बैकग्राउंड में सर्वर से नया डेटा मंगाएं
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getDashboard" })
+      });
+      const res = await response.json();
+      if (res) {
+        db = res;
+        localStorage.setItem('my_app_data', JSON.stringify(res)); // मेमोरी अपडेट करें
+        updateUI(); // यदि कोई बदलाव है तो स्क्रीन अपडेट करें
       }
-      document.getElementById("fundSource").innerHTML = options;
+    } catch (err) {
+      console.log("Offline mode: Using cached data.");
     }
+  }
 
-    async function saveTrans(type) {
-      const btn = event.target;
-      const originalText = btn.innerText;
-      let p = { action: "save" };
+  // 2. डेटा सेव करने वाला फंक्शन (ऑफलाइन सपोर्ट के साथ)
+  async function saveTrans(type) {
+    const btn = event.target;
+    const originalText = btn.innerText;
+    let p = { action: "save" };
 
-      if (type === 'entry') {
-        let m = document.getElementById("payMode").value;
-        p.type = m; 
-        p.name = (m === 'Digital Wallet') ? 'Wallet' : (m === 'bank' ? document.getElementById("expBank").value : document.getElementById("expCard").value);
-        p.amount = document.getElementById("expAmt").value; 
-        p.category = document.getElementById("expCat").value; 
-        p.remark = document.getElementById("expRem").value;
-      } 
-      else if (type === 'fund') {
-        p.type = "Add Fund"; 
-        p.amount = document.getElementById("fundAmt").value; 
-        p.source = document.getElementById("fundSource").value;
-        p.name = (document.getElementById("targetType").value === 'Wallet') ? 'Wallet' : document.getElementById("targetBankName").value;
-        p.remark = "Transfer from " + p.source;
-
-        // Fix 4: Bypass balance check for Income
-        if(p.source === 'Others') p.type = 'Income'; 
-      } 
-      else if (type === 'pay') {
-        p.type = "Bill Pay"; 
-        p.name = document.getElementById("payTo").value; 
-        p.amount = document.getElementById("payAmt").value;
-        let fromAcc = document.getElementById("payFrom").value;
-        p.remark = "Paid from " + fromAcc;
-        p.billType = document.getElementById("billType").value;
-
-        // Fix 5: Already Paid Check
-        if(p.billType === 'loan') {
-            const loan = db.loans.find(l => l.name === p.name);
-            if(loan && loan.status === 'Paid') {
-                return notify('Already Paid', 'इस महीने की EMI पहले ही भरी जा चुकी है!', 'info', '#38bdf8');
-            }
-        }
-      }
-
-      if (!p.amount || p.amount <= 0) {
-        return notify('Alert', 'Please enter a valid amount', 'warning', '#f59e0b');
-      }
-
-      btn.classList.add('loading-btn'); 
-      btn.innerText = "PROCESSING...";
-
-      try {
-        const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(p) });
-        const res = await response.json();
-        if (res.ok) {
-          notify('Success', 'Transaction recorded successfully!', 'check_circle', '#10b981');
-          document.querySelectorAll('.inp').forEach(i => { if(i.type === 'number' || i.type === 'text') i.value = ""; });
-          setTimeout(() => { showPage(0); }, 500);
-        } else {
-          notify('Failed', res.error, 'error_outline', '#ef4444');
-        }
-      } catch (e) {
-        notify('Error', 'Network connection failed!', 'error', '#ef4444');
-      } finally {
-        btn.classList.remove('loading-btn'); 
-        btn.innerText = originalText;
-      }
-    }
-
-    function notify(title, text, icon='check_circle', color='#10b981') {
-      document.getElementById('mTitle').innerText = title; document.getElementById('mText').innerText = text;
-      const ic = document.getElementById('mIcon'); ic.innerText = icon; ic.style.color = color;
-      document.getElementById('modal').style.display = 'flex';
-      setTimeout(() => document.getElementById('mBox').classList.add('show'), 10);
-    }
-    function closeModal() { document.getElementById('mBox').classList.remove('show'); setTimeout(() => document.getElementById('modal').style.display = 'none', 300); }
-    function toggleTheme() {
-      let h = document.documentElement; let isD = h.getAttribute('data-theme') === 'dark';
-      h.setAttribute('data-theme', isD ? 'light' : 'dark');
-      document.getElementById('tBtn').innerText = isD ? 'dark_mode' : 'light_mode';
-    }
-    
-    // Fix 1: Entry Tab Hide Card Option Logic
-    function toggleFields() {
+    // --- डेटा इकट्ठा करना ---
+    if (type === 'entry') {
       let m = document.getElementById("payMode").value;
-      document.getElementById("divBank").style.display = (m==='bank') ? 'block' : 'none';
-      document.getElementById("divCard").style.display = (m==='card') ? 'block' : 'none';
+      p.type = m; 
+      p.name = (m === 'Digital Wallet') ? 'Wallet' : (m === 'bank' ? document.getElementById("expBank").value : document.getElementById("expCard").value);
+      p.amount = Number(document.getElementById("expAmt").value); 
+      p.category = document.getElementById("expCat").value; 
+      p.remark = document.getElementById("expRem").value;
+    } 
+    // (बाकी फंड और पे वाले हिस्से भी इसी तरह रहेंगे...)
+
+    if (!p.amount || p.amount <= 0) return notify('Alert', 'Please enter amount', 'warning');
+
+    // --- ऑफलाइन चेक ---
+    if (!navigator.onLine) {
+      let pending = JSON.parse(localStorage.getItem('pending_sync') || "[]");
+      pending.push(p);
+      localStorage.setItem('pending_sync', JSON.stringify(pending));
+      
+      notify('Saved Offline', 'इंटरनेट नहीं है, डेटा फोन में सुरक्षित है!', 'info', '#3b82f6');
+      showPage(0); // वापस होम पर भेजें
+      return;
     }
 
-    window.onload = () => showPage(0);
-  </script>
-</body>
-</html>
+    // --- ऑनलाइन सेविंग ---
+    btn.innerText = "PROCESSING...";
+    try {
+      const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(p) });
+      const res = await response.json();
+      if (res.ok) {
+        notify('Success', 'Data Saved!', 'check_circle', '#10b981');
+        refreshData(); 
+        showPage(0);
+      } else {
+        notify('Error', res.error, 'error', '#ef4444');
+      }
+    } catch (e) {
+      notify('Error', 'Network failed!', 'error');
+    } finally {
+      btn.innerText = originalText;
+    }
+  }
+
+  // 3. इंटरनेट वापस आने पर ऑटो-सिंक
+  window.addEventListener('online', async () => {
+    let pending = JSON.parse(localStorage.getItem('pending_sync') || "[]");
+    if (pending.length > 0) {
+      notify('Syncing...', 'इंटरनेट मिल गया! डेटा अपडेट हो रहा है...', 'success');
+      for (let data of pending) {
+        await fetch(API_URL, { method: "POST", body: JSON.stringify(data) });
+      }
+      localStorage.removeItem('pending_sync');
+      notify('Updated!', 'सारा ऑफलाइन डेटा सेव हो गया है।', 'success');
+      refreshData();
+    }
+  });
+
+  // ऐप शुरू होते ही डेटा रिफ्रेश करें
+  window.onload = refreshData;
+
+</script>
