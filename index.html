@@ -254,23 +254,32 @@
     </div>
   </div>
 
-<script>
+  <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxGwFBHXOgUTwgconAWDF0qZXPJwxtHc-TFwv-2Q_wHcZcGJtNg_i5JdNydifhP3BFBBA/exec";
     let db = null;
     let curPage = 0;
     const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(n) || 0);
 
-    // ऑटो रिफ्रेश 30 सेकंड में
     setInterval(() => { if (curPage === 0) refreshData(); }, 30000);
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') refreshData(); });
 
+    // Initialize Theme & Persistence
     window.onload = () => {
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
       updateThemeUI(savedTheme);
       showPage(0);
+      registerSW();
     };
 
+    function registerSW() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(() => console.log("Service Worker Registered"))
+          .catch(err => console.log("Service Worker Error:", err));
+      }
+    }
+    
     function toggleMenu() { document.getElementById('settingsMenu').classList.toggle('show'); }
     window.onclick = (e) => { if (!e.target.matches('.material-icons-round')) document.getElementById('settingsMenu').classList.remove('show'); };
 
@@ -302,31 +311,30 @@
       if(idx === 2) updateFundSources();
     }
 
-    // --- फीचर 1: रिफ्रेश पर 0 ना आए (LocalStorage) ---
     async function refreshData() {
-      const sBtn = document.getElementById('sBtn');
-      sBtn.classList.add('spinning');
+  const sBtn = document.getElementById('sBtn');
+  if(sBtn) sBtn.classList.add('spinning');
 
-      // पहले लोकल स्टोरेज से डेटा लोड करें
-      const cachedData = localStorage.getItem('app_db_cache');
-      if(cachedData) {
-        db = JSON.parse(cachedData);
-        updateUI();
-      }
+  // 1. मेमोरी से पुराना डेटा तुरंत उठाएं ताकि 0 न दिखे
+  const cached = localStorage.getItem('app_db_cache');
+  if(cached && !db) {
+    db = JSON.parse(cached);
+    updateUI(); 
+  }
 
-      try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
-        if(res.ok) { 
-          db = res; 
-          localStorage.setItem('app_db_cache', JSON.stringify(res)); // नया डेटा सेव करें
-          updateUI(); 
-        }
-      } catch(e) { console.error("Sync Error - Offline Mode Active"); }
-      sBtn.classList.remove('spinning');
+  // 2. अब सर्वर से नया डेटा मंगाएं
+  try {
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
+    if(res.ok) { 
+      db = res; 
+      localStorage.setItem('app_db_cache', JSON.stringify(res)); // भविष्य के लिए सेव करें
+      updateUI(); 
     }
+  } catch(e) { console.error("Sync Failed"); }
+  if(sBtn) sBtn.classList.remove('spinning');
+}
 
     function updateUI() {
-      if(!db) return;
       const s = db.summary;
       document.getElementById("sumToday").innerText = fmt(s.todayExp);
       document.getElementById("sumMonth").innerText = fmt(s.monthExp);
@@ -339,6 +347,7 @@
 
       const getSum = (arr) => arr.reduce((acc, i) => acc + (Number(i.val) || Number(i.emi) || 0), 0);
 
+      // Banks
       document.getElementById("bankSub").innerText = fmt(getSum(db.banks));
       document.getElementById("bankList").innerHTML = db.banks.map(b => `
         <div class="row">
@@ -346,6 +355,7 @@
           <b class="${b.val < 0 ? 'val-neg' : 'val-pos'}">${fmt(b.val)}</b>
         </div>`).join("");
 
+      // Fix 3: Credit Card Color Coding (Red if > 0, Green if 0)
       document.getElementById("cardSub").innerText = fmt(getSum(db.cards));
       document.getElementById("cardList").innerHTML = db.cards.map(c => `
         <div class="row">
@@ -353,6 +363,7 @@
           <b class="${Number(c.val) > 0 ? 'val-neg' : 'val-pos'}">${fmt(c.val)}</b>
         </div>`).join("");
 
+      // Fix 5: Loans & EMI with Status
       document.getElementById("loanSub").innerText = fmt(getSum(db.loans));
       document.getElementById("loanList").innerHTML = db.loans.map(l => {
         const isPaid = l.status === 'Paid';
@@ -366,6 +377,7 @@
         </div>`;
       }).join("");
 
+      // Recent History
       document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `
         <div class="row"><div class="meta"><b>${t.name} <span style="font-size:9px; opacity:0.5;">${t.category}</span></b><small>${t.date}</small></div><b class="${t.type==='Add Fund' || t.type==='Income' ?'val-pos':'val-neg'}">${t.type==='Add Fund' || t.type==='Income' ?'+':'-'}${fmt(t.amount)}</b></div>
       `).join("");
@@ -381,7 +393,7 @@
       document.getElementById("expCat").innerHTML = db.categories.map(c => `<option value="${c.name}">${c.icon} ${c.name}</option>`).join("");
       updateBillTarget();
     }
-
+    // Fix 5: Auto-fill EMI Amount
     function autoFillEmi() {
         const type = document.getElementById("billType").value;
         const selectedName = document.getElementById("payTo").value;
@@ -417,7 +429,6 @@
       document.getElementById("fundSource").innerHTML = options;
     }
 
-    // --- फीचर 2: ऑफलाइन सेविंग + ऑनलाइन सिंक ---
     async function saveTrans(type) {
       const btn = event.target;
       const originalText = btn.innerText;
@@ -437,6 +448,8 @@
         p.source = document.getElementById("fundSource").value;
         p.name = (document.getElementById("targetType").value === 'Wallet') ? 'Wallet' : document.getElementById("targetBankName").value;
         p.remark = "Transfer from " + p.source;
+
+        // Fix 4: Bypass balance check for Income
         if(p.source === 'Others') p.type = 'Income'; 
       } 
       else if (type === 'pay') {
@@ -446,30 +459,28 @@
         let fromAcc = document.getElementById("payFrom").value;
         p.remark = "Paid from " + fromAcc;
         p.billType = document.getElementById("billType").value;
+
+        // Fix 5: Already Paid Check
         if(p.billType === 'loan') {
             const loan = db.loans.find(l => l.name === p.name);
-            if(loan && loan.status === 'Paid') return notify('Already Paid', 'EMI पहले ही भरी जा चुकी है!', 'info', '#38bdf8');
+            if(loan && loan.status === 'Paid') {
+                return notify('Already Paid', 'इस महीने की EMI पहले ही भरी जा चुकी है!', 'info', '#38bdf8');
+            }
         }
       }
 
-      if (!p.amount || p.amount <= 0) return notify('Alert', 'Please enter a valid amount', 'warning', '#f59e0b');
-
-      // ऑफलाइन चेक: अगर नेट नहीं है
-      if (!navigator.onLine) {
-        let pending = JSON.parse(localStorage.getItem('pending_sync') || "[]");
-        pending.push(p);
-        localStorage.setItem('pending_sync', JSON.stringify(pending));
-        notify('Saved Offline', 'नेट नहीं है, डेटा फोन में सेव है!', 'info', '#38bdf8');
-        showPage(0);
-        return;
+      if (!p.amount || p.amount <= 0) {
+        return notify('Alert', 'Please enter a valid amount', 'warning', '#f59e0b');
       }
 
+      btn.classList.add('loading-btn'); 
       btn.innerText = "PROCESSING...";
+
       try {
         const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(p) });
         const res = await response.json();
         if (res.ok) {
-          notify('Success', 'Transaction recorded!', 'check_circle', '#10b981');
+          notify('Success', 'Transaction recorded successfully!', 'check_circle', '#10b981');
           document.querySelectorAll('.inp').forEach(i => { if(i.type === 'number' || i.type === 'text') i.value = ""; });
           setTimeout(() => { showPage(0); }, 500);
         } else {
@@ -478,23 +489,10 @@
       } catch (e) {
         notify('Error', 'Network connection failed!', 'error', '#ef4444');
       } finally {
+        btn.classList.remove('loading-btn'); 
         btn.innerText = originalText;
       }
     }
-
-    // ऑटो सिंक जब इंटरनेट वापस आए
-    window.addEventListener('online', async () => {
-      let pending = JSON.parse(localStorage.getItem('pending_sync') || "[]");
-      if (pending.length > 0) {
-        notify('Syncing...', 'नेट वापस आ गया! डेटा सिंक हो रहा है...', 'success', '#10b981');
-        for (let data of pending) {
-          try { await fetch(API_URL, { method: "POST", body: JSON.stringify(data) }); } catch(e) {}
-        }
-        localStorage.removeItem('pending_sync');
-        notify('Updated!', 'ऑफलाइन डेटा सेव हो गया है।', 'success', '#10b981');
-        refreshData();
-      }
-    });
 
     function notify(title, text, icon, color) {
       document.getElementById('mTitle').innerText = title; document.getElementById('mText').innerText = text;
@@ -507,4 +505,16 @@
       document.getElementById("divBank").style.display = (m==='bank') ? 'block' : 'none';
       document.getElementById("divCard").style.display = (m==='card') ? 'block' : 'none';
     }
-</script>
+window.addEventListener("load", () => {
+  showPage(0);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(() => console.log("Service Worker Registered"))
+      .catch(err => console.log("SW Error:", err));
+  }
+});
+    
+  </script>
+</body>
+</html>
