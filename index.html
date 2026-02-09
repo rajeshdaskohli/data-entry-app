@@ -458,22 +458,39 @@
         // Fix 4: Bypass balance check for Income
         if(p.source === 'Others') p.type = 'Income'; 
       } 
-      else if (type === 'pay') {
-        p.type = "Bill Pay"; 
-        p.name = document.getElementById("payTo").value; 
-        p.amount = document.getElementById("payAmt").value;
-        let fromAcc = document.getElementById("payFrom").value;
-        p.remark = "Paid from " + fromAcc;
-        p.billType = document.getElementById("billType").value;
+      // saveTrans फंक्शन के अंदर 'pay' (Bills) वाले हिस्से को ऐसे बदलें:
+else if (type === 'pay') {
+    p.type = "Bill Pay"; 
+    p.name = document.getElementById("payTo").value; 
+    p.amount = Number(document.getElementById("payAmt").value); // राशि को नंबर में बदलें
+    let fromAcc = document.getElementById("payFrom").value;
+    p.remark = "Paid from " + fromAcc;
+    p.billType = document.getElementById("billType").value;
 
-        // Fix 5: Already Paid Check
-        if(p.billType === 'loan') {
-            const loan = db.loans.find(l => l.name === p.name);
-            if(loan && loan.status === 'Paid') {
-                return notify('Already Paid', 'इस महीने की EMI पहले ही भरी जा चुकी है!', 'info', '#38bdf8');
-            }
-        }
-      }
+    // --- बैलेंस चेक लॉजिक शुरू ---
+    let currentBalance = 0;
+    if (fromAcc === 'Wallet') {
+        currentBalance = db.walletBal;
+    } else {
+        // बैंक का बैलेंस ढूंढें
+        let bank = db.banks.find(b => b.name === fromAcc);
+        currentBalance = bank ? bank.val : 0;
+    }
+
+    // अगर बिल की राशि मौजूद बैलेंस से ज़्यादा है
+    if (p.amount > currentBalance) {
+        return notify('Insufficient Balance', 
+                      `${fromAcc} में पर्याप्त बैलेंस नहीं है! (Current: ${fmt(currentBalance)})`, 
+                      'error_outline', '#ef4444');
+    }
+    // --- बैलेंस चेक लॉजिक खत्म ---
+
+    // Already Paid Check (पुराना वाला)
+    if(p.billType === 'loan') {
+        const loan = db.loans.find(l => l.name === p.name);
+        if(loan && loan.status === 'Paid') return notify('Already Paid', 'EMI पहले ही भरी जा चुकी है!', 'info', '#38bdf8');
+    }
+}
 
       if (!p.amount || p.amount <= 0) {
         return notify('Alert', 'Please enter a valid amount', 'warning', '#f59e0b');
