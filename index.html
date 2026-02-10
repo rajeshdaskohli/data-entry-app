@@ -28,17 +28,15 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.2s ease; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; padding-bottom: 100px; }
 
-    /* Update 2: Processing Button Logic (Dull Color) */
-.btn-main:active { 
-  transform: scale(0.96); 
-}
+    /* --- Update: Processing Button (Dull Background, White Text) --- */
+    .btn-main:active { transform: scale(0.96); }
+    .loading-btn { 
+      background: #64748b !important; /* डल ग्रे-ब्लू बैकग्राउंड */
+      color: #ffffff !important;      /* टेक्स्ट एकदम वाइट */
+      pointer-events: none; 
+      filter: saturate(0.5); 
+    }
 
-.loading-btn { 
-  opacity: 0.6;              /* बटन को 40% धुंधला/फीका कर देगा */
-  pointer-events: none;      /* प्रोसेसिंग के दौरान दोबारा क्लिक नहीं होगा */
-  cursor: not-allowed;       /* माउस ले जाने पर 'रुकने' का साइन दिखेगा */
-  filter: saturate(0.6);     /* रंगों को थोड़ा फीका (Dull) कर देगा */
-}
     .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg); z-index: 100; border-bottom: 1px solid var(--border); }
     .header h1 { font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; }
     .controls { display: flex; align-items: center; position: relative; }
@@ -59,7 +57,7 @@
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- Update 1: New Hero Scroll Cards Setup --- */
+    /* --- Hero Scroll with 5 Cards --- */
     .hero-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 15px 0; scrollbar-width: none; scroll-snap-type: x mandatory; }
     .hero-scroll::-webkit-scrollbar { display: none; }
     .hero-card { min-width: 85%; scroll-snap-align: center; flex-shrink: 0; background: var(--card); padding: 20px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -156,43 +154,31 @@
             <small id="percentLabel" style="font-size:10px; opacity:0.8;">0% Spent</small>
           </div>
         </div>
-
         <div class="hero-card last-month-card">
           <span>LAST MONTH STATUS</span>
           <p id="lastMonthValue">₹0</p>
           <div id="lastMonthTag" class="status-tag">Checking...</div>
           <div style="margin-top:10px;"><small style="opacity:0.6; font-size:9px;">ARCHIVED ON 1ST</small></div>
         </div>
-        
         <div class="hero-card"><span>Today Exp</span><p id="sumToday">₹0</p></div>
+        <div class="hero-card"><span>Month Fund</span><p id="sumFund">₹0</p></div>
         <div class="hero-card"><span>Wallet Bal</span><p id="sumWallet">₹0</p></div>
       </div>
 
       <div class="label-row"><h3>SPENDING BY CATEGORY</h3></div>
       <div class="cat-grid" id="catGrid"></div>
 
-      <div class="label-row">
-        <h3>BANKS</h3>
-        <span id="bankSub" class="subtotal">₹0</span>
-      </div>
+      <div class="label-row"><h3>BANKS</h3><span id="bankSub" class="subtotal">₹0</span></div>
       <div class="list-container" id="bankList"></div>
 
-      <div class="label-row">
-        <h3>CREDIT CARDS</h3>
-        <span id="cardSub" class="subtotal">₹0</span>
-      </div>
+      <div class="label-row"><h3>CREDIT CARDS</h3><span id="cardSub" class="subtotal">₹0</span></div>
       <div class="list-container" id="cardList"></div>
 
-      <div class="label-row">
-        <h3>LOANS & EMI</h3>
-        <span id="loanSub" class="subtotal">₹0</span>
-      </div>
+      <div class="label-row"><h3>LOANS & EMI</h3><span id="loanSub" class="subtotal">₹0</span></div>
       <div class="list-container" id="loanList"></div>
 
       <div class="label-row"><h3>RECENT ACTIVITY</h3></div>
-      <div class="list-container">
-         <div class="scroll-area" id="historyList"></div>
-      </div>
+      <div class="list-container"><div class="scroll-area" id="historyList"></div></div>
     </div>
 
     <div class="page" id="pageEntry">
@@ -227,7 +213,7 @@
     <div class="page" id="pageFund">
       <div class="list-container" style="padding: 25px; margin-top: 20px;">
         <div class="inp-group">
-          <label>Deposit To (Destination)</label>
+          <label>Deposit To</label>
           <select class="inp" id="targetType" onchange="updateFundSources()">
             <option value="Wallet">👛 Wallet</option>
             <option value="Bank">🏦 Bank Account</option>
@@ -237,8 +223,7 @@
           <label>Target Bank</label><select class="inp" id="targetBankName"></select>
         </div>
         <div class="inp-group">
-          <label>From (Source)</label>
-          <select class="inp" id="fundSource"></select>
+          <label>From (Source)</label><select class="inp" id="fundSource"></select>
         </div>
         <div class="inp-group">
           <label>Amount</label><input type="number" class="inp" id="fundAmt" placeholder="0.00">
@@ -263,7 +248,7 @@
           <label>Pay From</label><select class="inp" id="payFrom"></select>
         </div>
         <div class="inp-group">
-          <label>Pay To (Select Account)</label><select class="inp" id="payTo" onchange="autoFillEmi()"></select>
+          <label>Pay To</label><select class="inp" id="payTo" onchange="autoFillEmi()"></select>
         </div>
         <div class="inp-group">
           <label>Amount</label><input type="number" class="inp" id="payAmt" placeholder="0.00">
@@ -271,7 +256,6 @@
         <button class="btn-main" id="btnSaveBill" onclick="saveTrans('pay')">PAY NOW</button>
       </div>
     </div>
-
   </div>
 
   <div class="nav-wrapper">
@@ -284,7 +268,7 @@
   </div>
 
   <script>
-    /* --- Update 3: Sync Background immediately with Theme --- */
+    /* --- Theme & Background Sync --- */
     (function() {
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
@@ -297,7 +281,6 @@
     const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(n) || 0);
 
     setInterval(() => { if (curPage === 0) refreshData(); }, 30000);
-    document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible') refreshData(); });
 
     window.onload = () => {
       const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -306,7 +289,6 @@
     };
 
     function toggleMenu() { document.getElementById('settingsMenu').classList.toggle('show'); }
-    window.onclick = (e) => { if (!e.target.matches('.material-icons-round')) document.getElementById('settingsMenu').classList.remove('show'); };
 
     function toggleTheme() {
       let h = document.documentElement;
@@ -328,17 +310,14 @@
       curPage = idx;
       const titles = ["EXPENSE PRO", "ENTRY", "TRANSFER", "BILLS"];
       document.getElementById('headerTitle').innerText = titles[idx];
-      
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById(['pageDashboard','pageEntry','pageFund','pageBills'][idx]).classList.add('active');
       document.querySelectorAll('.nav-item')[idx].classList.add('active');
       
-      /* --- Update 4: Dropdown Blink Fix - Only refresh if on Dashboard --- */
       if(idx === 0) {
           await refreshData();
       } else {
-          // If moving away from dashboard, just ensure current dropdowns are filled once
           if(db) fillDropdowns(); 
           if(idx === 2) updateFundSources();
       }
@@ -347,93 +326,59 @@
     async function refreshData() {
       const sBtn = document.getElementById('sBtn');
       if(sBtn) sBtn.classList.add('spinning');
-
       const cached = localStorage.getItem('app_db_cache');
-      if(cached && !db) {
-        db = JSON.parse(cached);
-        updateUI(); 
-      }
-
+      if(cached && !db) { db = JSON.parse(cached); updateUI(); }
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
-        if(res.ok) { 
-          db = res; 
-          localStorage.setItem('app_db_cache', JSON.stringify(res));
-          updateUI(); 
-        }
+        if(res.ok) { db = res; localStorage.setItem('app_db_cache', JSON.stringify(res)); updateUI(); }
       } catch(e) { console.error("Sync Failed"); }
       if(sBtn) sBtn.classList.remove('spinning');
     }
 
     function updateUI() {
       const s = db.summary;
-      
-      /* --- Update 1: Calculate Profit/Loss for Cards --- */
       const income = Number(s.totalIncome || 0);
       const expense = Number(s.monthExp || 0);
       const netPL = income - expense;
 
-      // Current Month Card
+      // P/L Card
       document.getElementById("monthPLValue").innerText = fmt(netPL);
       const prog = document.getElementById("plProgress");
       const label = document.getElementById("plStatusLabel");
       const perc = document.getElementById("percentLabel");
       const spentPercent = income > 0 ? Math.min((expense / income) * 100, 100) : (expense > 0 ? 100 : 0);
-      
       prog.style.width = spentPercent + "%";
       perc.innerText = Math.round(spentPercent) + "% Spent";
-      
-      if(netPL >= 0) {
-        label.innerText = "OVERALL PROFIT";
-        label.style.color = "#10b981";
-        prog.style.background = "#10b981";
-      } else {
-        label.innerText = "OVERALL LOSS";
-        label.style.color = "#ff4444";
-        prog.style.background = "#ff4444";
-      }
+      label.innerText = netPL >= 0 ? "OVERALL PROFIT" : "OVERALL LOSS";
+      label.style.color = netPL >= 0 ? "#10b981" : "#ff4444";
+      prog.style.background = netPL >= 0 ? "#10b981" : "#ff4444";
 
-      // Last Month Card
+      // Last Month
       const lastPL = Number(s.lastMonthPL || 0);
       document.getElementById("lastMonthValue").innerText = fmt(lastPL);
       const lastTag = document.getElementById("lastMonthTag");
-      if(lastPL >= 0) {
-          lastTag.innerText = "PROFITABLE";
-          lastTag.style.background = "rgba(16, 185, 129, 0.2)";
-          lastTag.style.color = "#10b981";
-      } else {
-          lastTag.innerText = "IN LOSS";
-          lastTag.style.background = "rgba(239, 68, 68, 0.2)";
-          lastTag.style.color = "#ff4444";
-      }
+      lastTag.innerText = lastPL >= 0 ? "PROFITABLE" : "IN LOSS";
+      lastTag.style.color = lastPL >= 0 ? "#10b981" : "#ff4444";
+      lastTag.style.background = lastPL >= 0 ? "rgba(16, 185, 129, 0.2)" : "rgba(239, 68, 68, 0.2)";
 
       document.getElementById("sumToday").innerText = fmt(s.todayExp);
+      document.getElementById("sumFund").innerText = fmt(s.monthFund); // Fixed!
       document.getElementById("sumWallet").innerText = fmt(db.walletBal);
 
       document.getElementById("catGrid").innerHTML = db.categories.map(c => `
-        <div class="cat-item"><div>${c.icon}</div><b>${c.name}</b><small style="color:var(--primary); font-size:10px;">${fmt(s.catTotals[c.name.toLowerCase().trim()] || 0)}</small></div>
+        <div class="cat-item"><div>${c.icon}</div><b>${c.name}</b><small>${fmt(s.catTotals[c.name.toLowerCase().trim()] || 0)}</small></div>
       `).join("");
 
       const getSum = (arr) => arr.reduce((acc, i) => acc + (Number(i.val) || Number(i.emi) || 0), 0);
       document.getElementById("bankSub").innerText = fmt(getSum(db.banks));
-      document.getElementById("bankList").innerHTML = db.banks.map(b => `
-        <div class="row"><div class="meta"><b>${b.name}</b><small>Balance</small></div><b class="${b.val < 0 ? 'val-neg' : 'val-pos'}">${fmt(b.val)}</b></div>`).join("");
-
+      document.getElementById("bankList").innerHTML = db.banks.map(b => `<div class="row"><div class="meta"><b>${b.name}</b><small>Balance</small></div><b class="${b.val < 0 ? 'val-neg' : 'val-pos'}">${fmt(b.val)}</b></div>`).join("");
       document.getElementById("cardSub").innerText = fmt(getSum(db.cards));
-      document.getElementById("cardList").innerHTML = db.cards.map(c => `
-        <div class="row"><div class="meta"><b>${c.name}</b><small>Outstanding</small></div><b class="${Number(c.val) > 0 ? 'val-neg' : 'val-pos'}">${fmt(c.val)}</b></div>`).join("");
-
+      document.getElementById("cardList").innerHTML = db.cards.map(c => `<div class="row"><div class="meta"><b>${c.name}</b><small>Outstanding</small></div><b class="${Number(c.val) > 0 ? 'val-neg' : 'val-pos'}">${fmt(c.val)}</b></div>`).join("");
       document.getElementById("loanSub").innerText = fmt(getSum(db.loans));
-      document.getElementById("loanList").innerHTML = db.loans.map(l => {
-        const isPaid = l.status === 'Paid';
-        return `<div class="row"><div class="meta"><b>${l.name} <span class="status-badge ${isPaid?'bg-green':'bg-red'}">${isPaid?'PAID':'UNPAID'}</span></b><small>Monthly EMI</small></div><b class="val-neg">${fmt(l.val)}</b></div>`;
-      }).join("");
+      document.getElementById("loanList").innerHTML = db.loans.map(l => `<div class="row"><div class="meta"><b>${l.name} <span class="status-badge ${l.status==='Paid'?'bg-green':'bg-red'}">${l.status==='Paid'?'PAID':'UNPAID'}</span></b><small>Monthly EMI</small></div><b class="val-neg">${fmt(l.val)}</b></div>`).join("");
 
-      document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `
-        <div class="row"><div class="meta"><b>${t.name} <span style="font-size:9px; opacity:0.5;">${t.category}</span></b><small>${t.date}</small></div><b class="${t.type==='Add Fund' || t.type==='Income' ?'val-pos':'val-neg'}">${t.type==='Add Fund' || t.type==='Income' ?'+':'-'}${fmt(t.amount)}</b></div>
-      `).join("");
+      document.getElementById("historyList").innerHTML = s.recentTrans.map(t => `<div class="row"><div class="meta"><b>${t.name} <span style="font-size:9px; opacity:0.5;">${t.category}</span></b><small>${t.date}</small></div><b class="${t.type==='Add Fund' || t.type==='Income' ?'val-pos':'val-neg'}">${t.type==='Add Fund' || t.type==='Income' ?'+':'-'}${fmt(t.amount)}</b></div>`).join("");
 
-      // --- Update 4: Only refill dropdowns if not currently on entry pages to prevent reset ---
       if(curPage === 0) fillDropdowns();
     }
 
@@ -452,8 +397,6 @@
         if(type === 'loan') {
             const loan = db.loans.find(l => l.name === selectedName);
             if(loan) document.getElementById("payAmt").value = loan.val;
-        } else {
-            document.getElementById("payAmt").value = "";
         }
     }
 
@@ -467,15 +410,14 @@
     function updateFundSources() {
       const dest = document.getElementById("targetType").value;
       const targetBankDiv = document.getElementById("divTargetBank");
-      let options = '<option value="Others">💳 Other/Salary Source</option>';
+      let options = '<option value="Others">💳 Salary/Income</option>';
       if(dest === 'Wallet') {
         targetBankDiv.style.display = "none";
         options += db.banks.filter(b=>b.name!=='Wallet' && b.name!=='Cash').map(b=>`<option value="${b.name}">🏦 From ${b.name}</option>`).join("");
       } else {
         targetBankDiv.style.display = "block";
         document.getElementById("targetBankName").innerHTML = db.banks.filter(b=>b.name!=='Wallet' && b.name!=='Cash').map(b=>`<option value="${b.name}">${b.name}</option>`).join("");
-        options += '<option value="Wallet">👛 From Digital Wallet</option>';
-        options += '<option value="Cash">💵 From Cash Hand</option>';
+        options += '<option value="Wallet">👛 From Wallet</option><option value="Cash">💵 From Cash</option>';
       }
       document.getElementById("fundSource").innerHTML = options;
     }
@@ -506,19 +448,11 @@
         let fromAcc = document.getElementById("payFrom").value;
         p.remark = "Paid from " + fromAcc;
         p.billType = document.getElementById("billType").value;
-
-        let currentBalance = (fromAcc === 'Wallet') ? Number(db.walletBal) : (db.banks.find(b => b.name === fromAcc)?.val || 0);
-        if (Number(p.amount) > currentBalance) {
-          notify('Failed', `Insufficient Balance in ${fromAcc}!`, 'error_outline', '#ef4444');
-          return;
-        }
       }
 
-      if (!p.amount || p.amount <= 0) return notify('Alert', 'Please enter a valid amount', 'warning', '#f59e0b');
+      if (!p.amount || p.amount <= 0) return notify('Alert', 'Valid amount required', 'warning', '#f59e0b');
 
-      /* --- Update 2: Visual Processing State --- */
-      btn.classList.add('loading-btn'); 
-      btn.innerText = "PROCESSING...";
+      btn.classList.add('loading-btn'); btn.innerText = "PROCESSING...";
 
       try {
         const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(p) });
@@ -530,12 +464,8 @@
         } else {
           notify('Failed', res.error, 'error_outline', '#ef4444');
         }
-      } catch (e) {
-        notify('Error', 'Network failed!', 'error', '#ef4444');
-      } finally {
-        btn.classList.remove('loading-btn'); 
-        btn.innerText = originalText;
-      }
+      } catch (e) { notify('Error', 'Network error!', 'error', '#ef4444'); }
+      finally { btn.classList.remove('loading-btn'); btn.innerText = originalText; }
     }
 
     function notify(title, text, icon, color) {
