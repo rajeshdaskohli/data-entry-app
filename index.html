@@ -3,14 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <link rel="manifest" href="manifest.json">
-  
-  <link rel="apple-touch-icon" href="https://i.ibb.co/6R0pT8q/449167.png">
-  <link rel="icon" href="https://i.ibb.co/6R0pT8q/449167.png">
-  
   <title>Expense Pro</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -29,40 +21,22 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: 0.2s ease; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; padding-bottom: 100px; }
 
-/* Update 2: Processing Button Logic (Dull Color) */
-.btn-main:active { 
-  transform: scale(0.96); 
-}
-
-.loading-btn { 
-  opacity: 0.7;              /* बटन को 40% धुंधला/फीका कर देगा */
-  pointer-events: none;      /* प्रोसेसिंग के दौरान दोबारा क्लिक नहीं होगा */
-  cursor: not-allowed;       /* माउस ले जाने पर 'रुकने' का साइन दिखेगा */
-  filter: saturate(0.6);     /* रंगों को थोड़ा फीका (Dull) कर देगा */
-}
-    /* Header & Menu */
+    /* Header */
     .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg); z-index: 100; border-bottom: 1px solid var(--border); }
     .header h1 { font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; }
-    .controls { display: flex; align-items: center; position: relative; }
     .controls i { cursor: pointer; margin-left: 15px; color: var(--text-dim); }
     
-    /* Rotation Fix for Sync Icon */
-    #sBtn { transform: scaleX(-1); } /* Arrow right side face logic */
+    #sBtn { transform: scaleX(-1); }
     @keyframes spin { from { transform: rotate(0deg) scaleX(-1); } to { transform: rotate(360deg) scaleX(-1); } }
     .spinning { animation: spin 1s linear infinite; color: var(--primary) !important; }
 
-    /* Settings Dropdown */
-    .menu-dropdown { display: none; position: absolute; top: 40px; right: 0; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 150px; z-index: 200; }
-    .menu-dropdown.show { display: block; }
-    .menu-item { display: flex; align-items: center; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 10px; }
-    .menu-item:hover { background: var(--border); }
-    .menu-item i { margin-right: 10px; font-size: 18px; margin-left: 0 !important; }
-
+    /* Container & Pages */
     .container { max-width: 500px; margin: 0 auto; padding: 0 16px; }
     .page { display: none; min-height: 70vh; animation: fadeIn 0.4s ease; }
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* Stats Cards */
     .hero-scroll { display: flex; overflow-x: auto; gap: 12px; padding: 15px 0; scrollbar-width: none; }
     .hero-card { min-width: 140px; background: var(--card); padding: 20px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .hero-card span { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
@@ -89,103 +63,65 @@
     .label-row h3 { font-size: 11px; font-weight: 800; color: var(--text-dim); margin: 0; letter-spacing: 1px; }
     .subtotal { font-weight: 800; font-size: 12px; color: var(--text); }
 
-   /* Navigation Bar (5 Tabs Design) */
-   .nav-wrapper { position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; z-index: 1000; }
-   .nav-bar { 
-   background: var(--card); 
-   display: flex; 
-   align-items: center;
-   padding: 10px 5px; 
-   border-radius: 35px; 
-   width: 94%; 
-   max-width: 450px; 
-   box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-   }
-   .nav-item { 
-   flex: 1; 
-   text-align: center; 
-   color: var(--text-dim); 
-   cursor: pointer; 
-   display: flex; 
-   flex-direction: column; 
-   align-items: center; 
-   }
-   .nav-item.active { color: var(--primary); }
-   .nav-item i { font-size: 24px; margin-bottom: 2px; }
-   .nav-item span { font-size: 10px; font-weight: 700; }
-   
-   /* बीच वाला + बटन */
-   .nav-item.center-btn { margin-top: -45px; }
-   .plus-circle {
-   background: #6d28d9; /* बैंगनी रंग */
-   width: 65px;
-   height: 65px;
-   border-radius: 50%;
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   box-shadow: 0 8px 20px rgba(109, 40, 217, 0.4);
-   border: 5px solid var(--bg);
-   color: white !important;
-   }
-   .plus-circle i { font-size: 35px; color: white; }
-   
+    /* Modern UI Card */
+    .db-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 18px; margin-bottom: 15px; }
+    .db-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .db-card-header b { font-size: 15px; font-weight: 800; }
+    .db-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .stat-box { display: flex; flex-direction: column; }
+    .stat-box span { font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
+    .stat-box b { font-size: 14px; margin: 2px 0; font-weight: 800; }
+    .stat-box small { font-size: 11px; color: var(--green); font-weight: 700; }
+    .red-text { color: var(--red) !important; }
+    
+    .progress-line { height: 6px; background: var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: 0.5s ease; }
+    .loan-fill { background: var(--green); } /* लोन के लिए अलग कलर */
 
+    .db-card-footer { border-top: 1px dashed var(--border); padding-top: 10px; display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); }
+    .db-card-footer b { color: var(--text); }
+
+    .label-row { display: flex; justify-content: space-between; align-items: center; margin: 25px 5px 10px; }
+    .label-row h3 { font-size: 11px; font-weight: 800; color: var(--text-dim); margin: 0; letter-spacing: 1px; }
+
+    /* Nav Bar */
+    .nav-wrapper { position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; z-index: 1000; }
+    .nav-bar { background: var(--card); display: flex; align-items: center; padding: 10px 5px; border-radius: 35px; width: 94%; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+    .nav-item { flex: 1; text-align: center; color: var(--text-dim); cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+    .nav-item.active { color: var(--primary); }
+    .nav-item i { font-size: 24px; margin-bottom: 2px; }
+    .nav-item span { font-size: 10px; font-weight: 700; }
+    .nav-item.center-btn { margin-top: -45px; }
+    .plus-circle { background: var(--primary); width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 10px rgba(0,0,0,0.2); border: 5px solid var(--bg); color: white !important; }
+
+    /* Input Fields */
     .inp-group { margin-bottom: 15px; }
-    .inp-group label { display: block; font-size: 10px; font-weight: 800; color: var(--primary); margin-left: 5px; margin-bottom: 5px; text-transform: uppercase; }
+    .inp-group label { display: block; font-size: 10px; font-weight: 800; color: var(--primary); margin-left: 5px; margin-bottom: 5px; }
     .inp { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 15px; color: var(--text); font-size: 15px; outline: none; }
-    .btn-main { width: 100%; background: var(--primary); color: #fff; border: none; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 16px; margin-top: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .btn-main { width: 100%; background: var(--primary); color: #fff; border: none; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 16px; cursor: pointer; }
     
-    #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-    .modal-box { background: var(--card); padding: 30px; border-radius: 32px; width: 85%; max-width: 320px; text-align: center; transform: scale(0.9); transition: 0.3s; }
-    .modal-box.show { transform: scale(1); }
-    
-    .val-pos { color: var(--green); } .val-neg { color: var(--red); }
-    .status-badge { font-size: 9px; padding: 2px 6px; border-radius: 6px; margin-left: 5px; vertical-align: middle; font-weight: 800; }
+    .status-badge { font-size: 9px; padding: 2px 6px; border-radius: 6px; font-weight: 800; }
     .bg-red { background: rgba(239, 68, 68, 0.1); color: var(--red); }
     .bg-green { background: rgba(16, 185, 129, 0.1); color: var(--green); }
   </style>
 </head>
 <body>
 
-  <div id="modal">
-    <div class="modal-box" id="mBox">
-      <i class="material-icons-round" id="mIcon" style="font-size: 50px;">check_circle</i>
-      <h2 id="mTitle" style="margin: 15px 0 5px;">Success</h2>
-      <p id="mText" style="color: var(--text-dim);"></p>
-      <button class="btn-main" onclick="closeModal()">OK</button>
-    </div>
-  </div>
-
   <div class="header">
     <h1 id="headerTitle">EXPENSE PRO</h1>
-    <div class="controls">
-      <i class="material-icons-round" onclick="refreshData()" id="sBtn">sync</i>
-      <i class="material-icons-round" onclick="toggleMenu()">more_vert</i>
-      
-      <div class="menu-dropdown" id="settingsMenu">
-        <div class="menu-item" onclick="toggleTheme()">
-          <i class="material-icons-round" id="themeIcon">light_mode</i>
-          <span id="themeText">Light Mode</span>
-        </div>
-        <div class="menu-item" onclick="refreshData()">
-          <i class="material-icons-round">refresh</i>
-          <span>Force Sync</span>
-        </div>
-      </div>
-    </div>
+    <div class="controls"><i class="material-icons-round" onclick="refreshData()" id="sBtn">sync</i></div>
   </div>
 
   <div class="container">
     <div class="page active" id="pageDashboard">
       <div class="hero-scroll">
-        <div class="hero-card"><span>Today Exp</span><p id="sumToday">₹0</p></div>
+       <div class="hero-card"><span>Today Exp</span><p id="sumToday">₹0</p></div>
         <div class="hero-card"><span>Month Exp</span><p id="sumMonth">₹0</p></div>
         <div class="hero-card"><span>Month Fund</span><p id="sumFund">₹0</p></div>
         <div class="hero-card"><span>Wallet Bal</span><p id="sumWallet">₹0</p></div>
       </div>
 
-      <div class="label-row"><h3>SPENDING BY CATEGORY</h3></div>
+            <div class="label-row"><h3>SPENDING BY CATEGORY</h3></div>
       <div class="cat-grid" id="catGrid"></div>
 
       <div class="label-row">
@@ -194,25 +130,14 @@
       </div>
       <div class="list-container" id="bankList"></div>
 
-      <div class="label-row">
-        <h3>CREDIT CARDS</h3>
-        <span id="cardSub" class="subtotal">₹0</span>
-      </div>
-      <div class="list-container" id="cardList"></div>
+      <div class="label-row"><h3>CREDIT CARDS</h3></div>
+      <div id="cardList"></div>
 
-      <div class="label-row">
-        <h3>LOANS & EMI</h3>
-        <span id="loanSub" class="subtotal">₹0</span>
-      </div>
-      <div class="list-container" id="loanList"></div>
-
-      <div class="label-row"><h3>RECENT ACTIVITY</h3></div>
-      <div class="list-container">
-         <div class="scroll-area" id="historyList"></div>
-      </div>
+      <div class="label-row"><h3>LOANS & EMI</h3></div>
+      <div id="loanList"></div>
     </div>
 
-    <div class="page" id="pageEntry">
+       <div class="page" id="pageEntry">
       <div class="list-container" style="padding: 25px; margin-top: 20px;">
         <div class="inp-group">
           <label>Payment Method</label>
@@ -266,14 +191,8 @@
         <button class="btn-main" id="btnSaveFund" onclick="saveTrans('fund')">CONFIRM TRANSFER</button>
       </div>
     </div>
-
-    <div class="page" id="pageBills">
-    <div class="page" id="pageHistory">
-    <div class="label-row"><h3>TRANSACTION HISTORY</h3></div>
-    <div class="list-container">
-    <div id="historyList"></div> </div>
-    </div>
     
+    <div class="page" id="pageBills">
       <div class="list-container" style="padding: 25px; margin-top: 20px;">
         <div class="inp-group">
           <label>Bill Type</label>
@@ -295,43 +214,33 @@
       </div>
     </div>
 
+  <div class="page" id="pageHistory">
+      <div class="label-row"><h3>TRANSACTION HISTORY</h3></div>
+      <div class="list-container">
+        <div id="fullHistory"></div>
+      </div>
+    </div>
+  </div>
+  
+    <div class="page" id="pageEntry"><h2>New Entry Page</h2></div>
+    <div class="page" id="pageTransfer"><h2>Transfer Page</h2></div>
+    <div class="page" id="pageBills"><h2>Bills Page</h2></div>
+    <div class="page" id="pageHistory"><h2>History Page</h2></div>
   </div>
 
- <div class="nav-wrapper">
- <div class="nav-bar">
- <div class="nav-item active" onclick="showPage(0)">
- <i class="material-icons-round">home</i>
- <span>Home</span>
- </div>
- <div class="nav-item" onclick="showPage(1)">
- <i class="material-icons-round">swap_horiz</i>
- <span>Transfer</span>
- </div>
- <div class="nav-item center-btn" onclick="showPage(2)">
- <div class="plus-circle"><i class="material-icons-round">add</i></div>
- </div>
- <div class="nav-item" onclick="showPage(3)">
- <i class="material-icons-round">receipt_long</i>
- <span>Bills</span>
- </div>
- <div class="nav-item" onclick="showPage(4)">
- <i class="material-icons-round">history</i>
- <span>History</span>
- </div>
- </div>
- </div>
- 
+  <div class="nav-wrapper">
+    <div class="nav-bar">
+      <div class="nav-item active" onclick="showPage(0)"><i class="material-icons-round">home</i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage(2)"><i class="material-icons-round">swap_horiz</i><span>Transfer</span></div>
+      <div class="nav-item center-btn" onclick="showPage(1)"><div class="plus-circle"><i class="material-icons-round">add</i></div></div>
+      <div class="nav-item" onclick="showPage(3)"><i class="material-icons-round">receipt_long</i><span>Bills</span></div>
+      <div class="nav-item" onclick="showPage(4)"><i class="material-icons-round">history</i><span>History</span></div>
+    </div>
+  </div>
 
   <script>
-    // इसे <script> के तुरंत बाद सबसे ऊपर डालें
-(function() {
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-})();
-    
-    const API_URL = "https://script.google.com/macros/s/AKfycbxGwFBHXOgUTwgconAWDF0qZXPJwxtHc-TFwv-2Q_wHcZcGJtNg_i5JdNydifhP3BFBBA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbx-Hxr3bpXTedY8LF8_XcepAP2c_S-EZ_dGJtIcg6Y_urFyYTVX9TepJ2noKNHAixfUwQ/exec";
     let db = null;
-    let curPage = 0;
     const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(n) || 0);
 
     setInterval(() => { if (curPage === 0) refreshData(); }, 30000);
@@ -371,112 +280,81 @@
       icon.innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
       text.innerText = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
     }
-
+    
     async function showPage(idx) {
-    curPage = idx;
-    const titles = ["EXPENSE PRO", "TRANSFER", "NEW ENTRY", "BILLS", "HISTORY"];
-    document.getElementById('headerTitle').innerText = titles[idx];
-    
-    // सभी पेजों को छुपाएं
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    
-    // सही पेज दिखाएं (ID का क्रम ध्यान रखें)
-    const pages = ['pageDashboard', 'pageFund', 'pageEntry', 'pageBills', 'pageHistory'];
-    document.getElementById(pages[idx]).classList.add('active');
-    document.querySelectorAll('.nav-item')[idx].classList.add('active');
-    
-    // अगर होम या हिस्ट्री पेज पर हैं तो डेटा रिफ्रेश करें
-    if(idx === 0 || idx === 4) {
-    await refreshData();
-      } else {
-          // If moving away from dashboard, just ensure current dropdowns are filled once
-          if(db) fillDropdowns(); 
-          if(idx === 2) updateFundSources();
-      }
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const pages = ['pageDashboard', 'pageEntry', 'pageTransfer', 'pageBills', 'pageHistory'];
+      document.getElementById(pages[idx]).classList.add('active');
+      document.querySelectorAll('.nav-item')[idx].classList.add('active');
+      if(idx === 0) await refreshData();
     }
 
     async function refreshData() {
-  const sBtn = document.getElementById('sBtn');
-  if(sBtn) sBtn.classList.add('spinning');
-
-  // 1. मेमोरी से पुराना डेटा तुरंत उठाएं ताकि 0 न दिखे
-  const cached = localStorage.getItem('app_db_cache');
-  if(cached && !db) {
-    db = JSON.parse(cached);
-    updateUI(); 
-  }
-
-  // 2. अब सर्वर से नया डेटा मंगाएं
-  try {
-    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
-    if(res.ok) { 
-      db = res; 
-      localStorage.setItem('app_db_cache', JSON.stringify(res)); // भविष्य के लिए सेव करें
-      updateUI(); 
+      const sBtn = document.getElementById('sBtn');
+      if(sBtn) sBtn.classList.add('spinning');
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({action: "getDashboard"}) }).then(r => r.json());
+        if(res.ok) { db = res; updateUI(); }
+      } catch(e) { console.error("Sync Failed"); }
+      if(sBtn) sBtn.classList.remove('spinning');
     }
-  } catch(e) { console.error("Sync Failed"); }
-  if(sBtn) sBtn.classList.remove('spinning');
-}
 
     function updateUI() {
-      const s = db.summary;
-      document.getElementById("sumToday").innerText = fmt(s.todayExp);
-      document.getElementById("sumMonth").innerText = fmt(s.monthExp);
-      document.getElementById("sumFund").innerText = fmt(s.monthFund);
+      document.getElementById("sumMonth").innerText = fmt(db.summary.monthExp);
       document.getElementById("sumWallet").innerText = fmt(db.walletBal);
 
-      document.getElementById("catGrid").innerHTML = db.categories.map(c => `
-        <div class="cat-item"><div>${c.icon}</div><b>${c.name}</b><small style="color:var(--primary); font-size:10px;">${fmt(s.catTotals[c.name.toLowerCase().trim()] || 0)}</small></div>
-      `).join("");
+      // --- CREDIT CARDS ---
+      document.getElementById("cardList").innerHTML = db.cards.map(c => {
+        const limit = Number(c.limit) || 0; // शीट से आएगी
+        const used = Number(c.val);
+        const avail = limit - used;
+        const per = limit > 0 ? (used / limit) * 100 : 0;
+        const dDate = c.dueDate || 'N/A'; // शीट से आएगी
 
-      const getSum = (arr) => arr.reduce((acc, i) => acc + (Number(i.val) || Number(i.emi) || 0), 0);
-
-      // Banks
-      document.getElementById("bankSub").innerText = fmt(getSum(db.banks));
-      document.getElementById("bankList").innerHTML = db.banks.map(b => `
-        <div class="row">
-          <div class="meta"><b>${b.name}</b><small>Balance</small></div>
-          <b class="${b.val < 0 ? 'val-neg' : 'val-pos'}">${fmt(b.val)}</b>
-        </div>`).join("");
-
-      // Fix 3: Credit Card Color Coding (Red if > 0, Green if 0)
-      document.getElementById("cardSub").innerText = fmt(getSum(db.cards));
-      document.getElementById("cardList").innerHTML = db.cards.map(c => `
-        <div class="row">
-          <div class="meta"><b>${c.name}</b><small>Outstanding</small></div>
-          <b class="${Number(c.val) > 0 ? 'val-neg' : 'val-pos'}">${fmt(c.val)}</b>
-        </div>`).join("");
-
-      // Fix 5: Loans & EMI with Status
-      document.getElementById("loanSub").innerText = fmt(getSum(db.loans));
-      document.getElementById("loanList").innerHTML = db.loans.map(l => {
-        const isPaid = l.status === 'Paid';
         return `
-        <div class="row">
-          <div class="meta">
-            <b>${l.name} <span class="status-badge ${isPaid?'bg-green':'bg-red'}">${isPaid?'PAID':'UNPAID'}</span></b>
-            <small>Monthly EMI</small>
+        <div class="db-card">
+          <div class="db-card-header"><b>💳 ${c.name}</b><span class="status-badge ${used>0?'bg-red':'bg-green'}">${used>0?'DUE':'CLEAN'}</span></div>
+          <div class="progress-line"><div class="progress-fill" style="width: ${per}%"></div></div>
+          <div class="db-card-grid">
+            <div class="stat-box"><span>Used Amount</span><b class="${used>0?'red-text':''}">${fmt(used)}</b></div>
+            <div class="stat-box" style="text-align:right;"><span>Available</span><b style="color:var(--green)">${fmt(avail)}</b></div>
           </div>
-          <b class="val-neg">${fmt(l.val)}</b>
+          <div class="db-card-footer">
+            <span>Limit: <b>${fmt(limit)}</b></span>
+            <span>Due Date: <b class="red-text">${dDate}</b></span>
+          </div>
         </div>`;
       }).join("");
 
-     // updateUI फंक्शन के अंदर इसे अपडेट करें
-     document.getElementById("historyList").innerHTML = db.summary.recentTrans.map(t => `
-     <div class="row">
-     <div class="meta">
-     <b>${t.name} <small style="opacity:0.5;">(${t.category})</small></b>
-     <small>${t.date}</small>
-     </div>
-     <b class="${t.type==='Income' || t.type==='Add Fund' ? 'val-pos' : 'val-neg'}">
-     ${t.type==='Income' || t.type==='Add Fund' ? '+' : '-'}${fmt(t.amount)}
-     </b>
-     </div>
-     `).join("");
-     
-      
-     // --- Update 4: Only refill dropdowns if not currently on entry pages to prevent reset ---
+      // --- LOANS & EMI (WITH PROGRESS BAR) ---
+      document.getElementById("loanList").innerHTML = db.loans.map(l => {
+        const total = Number(l.totalAmt) || 0;
+        const paid = Number(l.paidAmt) || 0;
+        const rem = total - paid;
+        const per = total > 0 ? (paid / total) * 100 : 0;
+        const mDone = l.monthsPaid || 0;
+        const mLeft = (l.tenure || 0) - mDone;
+
+        return `
+        <div class="db-card">
+          <div class="db-card-header"><b>🏠 ${l.name}</b><span class="status-badge ${l.status==='Paid'?'bg-green':'bg-red'}">${l.status==='Paid'?'PAID':'UNPAID'}</span></div>
+          <div class="progress-line"><div class="progress-fill loan-fill" style="width: ${per}%"></div></div>
+          <div class="db-card-grid">
+            <div class="stat-box"><span>Paid Amount</span><b>${fmt(paid)}</b><small>Month Done: ${mDone}</small></div>
+            <div class="stat-box" style="text-align:right;"><span>Remaining</span><b class="red-text">${fmt(rem)}</b><small class="red-text">Left: ${mLeft} Mo</small></div>
+          </div>
+          <div class="db-card-footer">
+            <span>Total Loan: <b>${fmt(total)}</b></span>
+            <span>Tenure: <b>${l.tenure || 0} Months</b></span>
+          </div>
+        </div>`;
+      }).join("");
+    const historyContainer = document.getElementById("fullHistory");
+      if(historyContainer && db.summary.recentTrans) {
+        
+        historyContainer.innerHTML = db.summary.recentTrans.map(t => `<div class="row"><div class="meta"><b>${t.name} <small style="opacity:0.5;">(${t.category})</small></b><small>${t.date}</small></div><b class="${t.type==='Income' || t.type==='Add Fund' ? 'val-pos' : 'val-neg'}">${t.type==='Income' || t.type==='Add Fund' ? '+' : '-'}${fmt(t.amount)}</b></div>`).join("");
+      }
       if(curPage === 0) fillDropdowns();
     }
 
@@ -627,8 +505,8 @@ window.addEventListener("load", () => {
       .then(() => console.log("Service Worker Registered"))
       .catch(err => console.log("SW Error:", err));
   }
-});
-    
+
+    window.onload = refreshData;
   </script>
 </body>
 </html>
